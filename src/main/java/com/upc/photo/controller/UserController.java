@@ -4,6 +4,7 @@ import com.upc.photo.model.Role;
 import com.upc.photo.model.User;
 import com.upc.photo.service.RoleService;
 import com.upc.photo.service.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +34,10 @@ public class UserController {
         roles.add(new Role("ROLE_USER"));
         user.setAuthorities(roles);
         return userService.createUser(user);
+    }
+
+    @RequestMapping("/get_info")
+    public User getUserInfo(Authentication authentication){
+        return (User) authentication.getPrincipal();
     }
 }
