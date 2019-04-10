@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/photo?useSSL=false
+    username: waiter
+    password: 690818
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+    open-in-view: true
+
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      database: photo
+      grid-fs-database: photo-files
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+  servlet:
+    multipart:
+      max-request-size: 30000000
+      enabled: true
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 5s
+      quiet-period: 4s
+  cache:
+    redis:
+      time-to-live: 600000
+
+logging:
+  file: photo.log
+  level:
+    org.springframework: warn
+    com.upc.photo: trace
+server:
+  port: 8086

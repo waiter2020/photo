@@ -1,6 +1,11 @@
 package com.upc.photo.service;
 
+import com.drew.imaging.ImageProcessingException;
 import com.upc.photo.model.Photo;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @Author: waiter
@@ -13,5 +18,5 @@ public interface PhotoService {
      * @param photo
      * @return
      */
-    Photo save(Photo photo);
+    Photo save(MultipartFile photo) throws IOException, ImageProcessingException;
 }

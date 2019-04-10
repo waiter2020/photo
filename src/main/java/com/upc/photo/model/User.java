@@ -1,5 +1,6 @@
 package com.upc.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,7 @@ public class User implements UserDetails , Serializable {
     @Column(unique = true)
     private String username;
 
+    @JsonIgnore
     private String password;
 
     private String email;

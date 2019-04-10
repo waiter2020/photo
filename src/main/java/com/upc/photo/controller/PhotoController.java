@@ -1,5 +1,6 @@
 package com.upc.photo.controller;
 
+import com.drew.imaging.ImageProcessingException;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.upc.photo.model.Photo;
 
@@ -52,18 +53,12 @@ public class PhotoController {
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/upload")
-    public Object upload(@RequestParam("file") MultipartFile  file) throws IOException {
-        UUID uuid = UUID.randomUUID();
-        Photo photo = new Photo();
-        photo.setName(file.getOriginalFilename());
-        photo.setFileName(uuid+"-"+file.getOriginalFilename());
-        photo.setType(PhotoType.SCENERY);
-        ObjectId fileId = gridFsTemplate.store(file.getInputStream(), uuid+"-"+file.getOriginalFilename());
-        if (fileId==null){
-            throw new IOException();
-        }
-        Photo save = photoService.save(photo);
-        return save;
+    public Object upload(@RequestParam("file") MultipartFile  file,
+                         @RequestParam(name = "md5",required = false) String md5) throws IOException, ImageProcessingException {
+        //TODO: MD5校验
+
+
+        return photoService.save(file);
     }
 
     @GetMapping("/get/{photoId}")
