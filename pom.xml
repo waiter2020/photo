@@ -91,7 +91,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.13</version>
                 <configuration>
-                    <dockerHost>http://0.0.0.0:2375/</dockerHost>
+                    <dockerHost>http://59.110.163.243:2375/</dockerHost>
                     <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
