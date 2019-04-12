@@ -6,7 +6,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @Author: waiter
@@ -24,6 +26,7 @@ public class OptionsRequestFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Headers", response.getHeader("Access-Control-Request-Headers"));
             return;
         }
+
         filterChain.doFilter(request, response);
     }
 

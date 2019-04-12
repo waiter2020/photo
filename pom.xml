@@ -91,7 +91,6 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.13</version>
                 <configuration>
-                    <dockerHost>http://59.110.163.243:2375/</dockerHost>
                     <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
@@ -105,6 +104,9 @@
                             <include>${project.build.finalName}.jar</include>
                         </resource>
                     </resources>
+                    <serverId>docker-hub</serverId>
+                    <registryUrl>https://hub.docker.com/</registryUrl>
+                    <exposes>8080</exposes>
                 </configuration>
             </plugin>
         </plugins>

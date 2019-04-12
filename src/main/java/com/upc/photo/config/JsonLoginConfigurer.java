@@ -1,5 +1,6 @@
 package com.upc.photo.config;
 
+import com.upc.photo.component.MyUsernamePasswordAuthenticationFilter;
 import com.upc.photo.handler.HttpStatusLoginFailureHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
@@ -15,10 +16,10 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
  */
 public class JsonLoginConfigurer<T extends JsonLoginConfigurer<T, B>, B extends HttpSecurityBuilder<B>> extends AbstractHttpConfigurer<T, B>  {
 
-	private UsernamePasswordAuthenticationFilter authFilter;
+	private MyUsernamePasswordAuthenticationFilter authFilter;
 
 	public JsonLoginConfigurer() {
-		this.authFilter = new UsernamePasswordAuthenticationFilter();
+		this.authFilter = new MyUsernamePasswordAuthenticationFilter();
 	}
 	
 	@Override
@@ -27,7 +28,7 @@ public class JsonLoginConfigurer<T extends JsonLoginConfigurer<T, B>, B extends 
 		authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
 		authFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
 
-		UsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
+		MyUsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
 		http.addFilterAfter(filter, LogoutFilter.class);
 	}
 	
