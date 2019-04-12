@@ -26,7 +26,7 @@ import java.util.UUID;
  */
 @Data
 @Document
-public class Photo {
+public class Photo implements Serializable{
 
     @Indexed
     @JsonSerialize(using = BigIntegerJsonSerializer.class)
@@ -44,6 +44,7 @@ public class Photo {
     private PhotoType type;
 
     private Location location;
+    private Address address;
     private Date create;
     @CreatedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

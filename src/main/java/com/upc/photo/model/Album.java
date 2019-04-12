@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -20,7 +21,7 @@ import java.util.Date;
  */
 @Document
 @Data
-public class Album {
+public class Album implements Serializable {
 
     @Indexed
     @JsonSerialize(using = BigIntegerJsonSerializer.class)

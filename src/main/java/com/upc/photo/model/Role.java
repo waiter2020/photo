@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * @Author: waiter
@@ -15,7 +16,7 @@ import javax.persistence.Id;
  */
 @Entity
 @Data
-public class Role implements GrantedAuthority {
+public class Role implements GrantedAuthority , Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

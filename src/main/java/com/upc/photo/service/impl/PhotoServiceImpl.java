@@ -10,12 +10,15 @@ import com.upc.photo.dao.PhotoDao;
 import com.upc.photo.model.Photo;
 import com.upc.photo.model.PhotoType;
 import com.upc.photo.service.PhotoService;
+import com.upc.photo.utils.GetAddressByBaidu;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -71,6 +74,8 @@ public class PhotoServiceImpl implements PhotoService {
 
         photo.setCreate(date);
 
+        photo.setAddress(GetAddressByBaidu.getAddress(location.getLatitude(),location.getLongitude()));
+
         //TODO:调用py接口获取照片类别
         photo.setType(PhotoType.SCENERY);
         ObjectId fileId = gridFsTemplate.store(file.getInputStream(), uuid + "-" + file.getOriginalFilename());
@@ -78,5 +83,11 @@ public class PhotoServiceImpl implements PhotoService {
             throw new IOException();
         }
         return photoDao.save(photo);
+    }
+
+    @Cacheable(cacheNames = "photo")
+    @Override
+    public ArrayList<Photo> findAll(String userName) {
+        return photoDao.findAllByAuthor(userName);
     }
 }

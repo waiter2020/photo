@@ -28,6 +28,8 @@ public class User implements UserDetails , Serializable {
     @Column(unique = true)
     private String username;
 
+    private String nickname;
+
     @JsonIgnore
     private String password;
 

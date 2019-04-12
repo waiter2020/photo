@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @Author: waiter
@@ -19,4 +20,6 @@ public interface PhotoService {
      * @return
      */
     Photo save(MultipartFile photo) throws IOException, ImageProcessingException;
+
+    ArrayList<Photo> findAll(String userName);
 }

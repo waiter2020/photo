@@ -7,6 +7,7 @@ import com.upc.photo.model.Photo;
 import com.upc.photo.model.PhotoType;
 import com.upc.photo.service.PhotoService;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.InputStreamResource;
 import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
@@ -29,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -61,13 +63,13 @@ public class PhotoController {
         return photoService.save(file);
     }
 
+    @Cacheable(cacheNames = "photo_file")
     @GetMapping("/get/{photoId}")
     public ResponseEntity<InputStreamResource> get(@PathVariable("photoId") Photo photo,Authentication authentication) throws IOException {
         Assert.isTrue(((UserDetails)authentication.getPrincipal()).getUsername().equals(photo.getAuthor()),"无权访问");
         GridFSFile myFile = gridFsTemplate.findOne(query(whereFilename().is(photo.getFileName())));
         if (myFile==null){
             return null;
-//            myFile=gridFsTemplate.findOne(query());
         }
         GridFsResource gridFsResource=gridFsTemplate.getResource(myFile);
 
@@ -84,4 +86,12 @@ public class PhotoController {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new InputStreamResource(gridFsResource.getInputStream()));
     }
+
+
+    @GetMapping("/get_all")
+    public ArrayList<Photo> getAllPhoto(Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.findAll(username);
+    }
+
 }
