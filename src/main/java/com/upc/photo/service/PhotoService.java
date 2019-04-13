@@ -1,6 +1,7 @@
 package com.upc.photo.service;
 
 import com.drew.imaging.ImageProcessingException;
+import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,4 +23,6 @@ public interface PhotoService {
     Photo save(MultipartFile photo) throws IOException, ImageProcessingException;
 
     ArrayList<Photo> findAll(String userName);
+
+    ArrayList<Photo> getAlbumPhoto(Album album);
 }

@@ -4,6 +4,7 @@ import com.upc.photo.model.Album;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * @Author: waiter
@@ -12,4 +13,5 @@ import java.math.BigInteger;
  */
 
 public interface AlbumDao extends MongoRepository<Album, BigInteger> {
+    ArrayList<Album> findAllByAuthor(String author);
 }

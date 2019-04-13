@@ -7,12 +7,15 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.upc.photo.dao.PhotoDao;
+import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 import com.upc.photo.model.PhotoType;
 import com.upc.photo.service.PhotoService;
 import com.upc.photo.utils.GetAddressByBaidu;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +41,10 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "photos",key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto'+#result.album"),
+            @CacheEvict(cacheNames = "photos",key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll'+#result.author")
+    })
     @Override
     public Photo save(MultipartFile file) throws IOException, ImageProcessingException {
         UUID uuid = UUID.randomUUID();
@@ -85,9 +92,15 @@ public class PhotoServiceImpl implements PhotoService {
         return photoDao.save(photo);
     }
 
-    @Cacheable(cacheNames = "photo")
+    @Cacheable(cacheNames = "photos")
     @Override
     public ArrayList<Photo> findAll(String userName) {
         return photoDao.findAllByAuthor(userName);
+    }
+
+    @Cacheable(cacheNames = "photos")
+    @Override
+    public ArrayList<Photo> getAlbumPhoto(Album album) {
+        return photoDao.findAllByAlbum(album);
     }
 }

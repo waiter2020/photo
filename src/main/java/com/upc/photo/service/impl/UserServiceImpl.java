@@ -7,6 +7,7 @@ import com.upc.photo.model.User;
 import com.upc.photo.service.UserService;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -89,6 +90,12 @@ public class UserServiceImpl implements  UserService {
     public User createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
        return userDao.save(user);
+    }
+
+    @CacheEvict(cacheNames = "user",key = "'com.upc.photo.service.impl.UserServiceImplloadUserByUsername'+#user.username")
+    @Override
+    public User save(User user) {
+        return userDao.save(user);
     }
 
     @Override

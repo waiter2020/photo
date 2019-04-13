@@ -31,9 +31,16 @@ public class UserController {
     @PostMapping("/add")
     public User addUser(User user){
         ArrayList<Role> roles = new ArrayList<>();
-        roles.add(new Role("ROLE_USER"));
+        roles.add(roleService.findOne("ROLE_USER"));
         user.setAuthorities(roles);
         return userService.createUser(user);
+    }
+
+    @PostMapping("/change_nick_name")
+    public User changeNickName(String nickName,Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        user.setNickname(nickName);
+        return userService.save(user);
     }
 
     @RequestMapping("/get_info")

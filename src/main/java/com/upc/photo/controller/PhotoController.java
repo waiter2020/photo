@@ -2,11 +2,13 @@ package com.upc.photo.controller;
 
 import com.drew.imaging.ImageProcessingException;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 
 import com.upc.photo.model.PhotoType;
 import com.upc.photo.service.PhotoService;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.InputStreamResource;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -20,6 +22,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +40,7 @@ import java.util.UUID;
  * @Author: waiter
  * @Date: 2019/4/1 20:57
  * @Version 1.0
+ * 照片
  */
 
 @RestController
@@ -63,10 +67,47 @@ public class PhotoController {
         return photoService.save(file);
     }
 
+    /**
+     * 获取一张照片
+     * @param photo
+     *
+     * @return
+     * @throws IOException
+     */
+    @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
     @Cacheable(cacheNames = "photo_file")
     @GetMapping("/get/{photoId}")
-    public ResponseEntity<InputStreamResource> get(@PathVariable("photoId") Photo photo,Authentication authentication) throws IOException {
-        Assert.isTrue(((UserDetails)authentication.getPrincipal()).getUsername().equals(photo.getAuthor()),"无权访问");
+    public ResponseEntity<InputStreamResource> getPhoto(@PathVariable("photoId") Photo photo) throws IOException {
+        return getPhotoFile(photo);
+    }
+
+
+
+
+    /**
+     * 获取当前用户所有照片
+     * @param authentication
+     * @return
+     */
+    @GetMapping("/get_all")
+    public ArrayList<Photo> getAllPhoto(Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.findAll(username);
+    }
+
+    /**
+     * 获取某一相册所有照片
+     * @param album
+     * @return
+     */
+    @PreAuthorize("#album.author==authentication.principal.username or hasAuthority('ADMIN')")
+    @GetMapping("/get_album_photos/{id}")
+    public ArrayList<Photo> getAlbumPhotos(@PathVariable("id")Album album){
+        return photoService.getAlbumPhoto(album);
+    }
+
+
+    private ResponseEntity<InputStreamResource> getPhotoFile(@NotNull Photo photo) throws IOException {
         GridFSFile myFile = gridFsTemplate.findOne(query(whereFilename().is(photo.getFileName())));
         if (myFile==null){
             return null;
@@ -86,12 +127,4 @@ public class PhotoController {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new InputStreamResource(gridFsResource.getInputStream()));
     }
-
-
-    @GetMapping("/get_all")
-    public ArrayList<Photo> getAllPhoto(Authentication authentication){
-        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-        return photoService.findAll(username);
-    }
-
 }

@@ -26,4 +26,7 @@ public interface UserService extends UserDetailsService {
     String saveUserLoginInfo(UserDetails principal);
 
     User createUser(User user);
+
+    User save(User user);
+
 }
