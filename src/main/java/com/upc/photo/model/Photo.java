@@ -31,12 +31,25 @@ public class Photo implements Serializable{
     @Indexed
     @JsonSerialize(using = BigIntegerJsonSerializer.class)
     private BigInteger id;
+
     @CreatedBy
     private String author;
 
+    /**
+     * 原文件名
+     */
     private String name;
 
+    /***
+     * 服务端存储的文件名
+     */
     private String fileName;
+
+    /**
+     * 缩略图文件名
+     */
+    private String thumbnailName;
+
 
     @DBRef
     private Album album;

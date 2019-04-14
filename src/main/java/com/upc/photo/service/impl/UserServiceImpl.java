@@ -54,6 +54,7 @@ public class UserServiceImpl implements  UserService {
         if (user==null) {
             user = (User) loadUserByUsername(username);
         }
+
         //将salt放到password字段返回
         user.setPassword(salt);
         return user;

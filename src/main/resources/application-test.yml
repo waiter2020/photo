@@ -24,7 +24,7 @@ spring:
       grid-fs-database: photo-files
 
   redis:
-    host: 59.110.163.243
+    host: 192.168.99.100
     port: 6379
 
 

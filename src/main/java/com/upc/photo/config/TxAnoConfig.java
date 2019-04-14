@@ -38,7 +38,7 @@ public class TxAnoConfig {
         RuleBasedTransactionAttribute requiredTx = new RuleBasedTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRED,
                 Collections.singletonList(new RollbackRuleAttribute(Exception.class)));
         requiredTx.setTimeout(5);
-        Map<String, TransactionAttribute> txMap = new HashMap<>();
+        Map<String, TransactionAttribute> txMap = new HashMap<>(10);
         txMap.put("add*", requiredTx);
         txMap.put("save*", requiredTx);
         txMap.put("insert*", requiredTx);

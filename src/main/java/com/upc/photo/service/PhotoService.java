@@ -3,11 +3,14 @@ package com.upc.photo.service;
 import com.drew.imaging.ImageProcessingException;
 import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 /**
  * @Author: waiter
@@ -20,9 +23,13 @@ public interface PhotoService {
      * @param photo
      * @return
      */
-    Photo save(MultipartFile photo) throws IOException, ImageProcessingException;
+    void save(MultipartFile photo,String md5,Album album,String userName) throws IOException, ImageProcessingException;
 
     ArrayList<Photo> findAll(String userName);
 
     ArrayList<Photo> getAlbumPhoto(Album album);
+
+    Photo findById(BigInteger id);
+
+    GridFsResource getPhotoResource(String fileName);
 }

@@ -59,29 +59,42 @@ public class PhotoController {
 
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/upload")
-    public Object upload(@RequestParam("file") MultipartFile  file,
-                         @RequestParam(name = "md5",required = false) String md5) throws IOException, ImageProcessingException {
+    public Boolean upload(@RequestParam("file") MultipartFile  file,
+                         @RequestParam(name = "md5",required = false) String md5,
+                          @RequestParam(name = "id",required = false)Album album,
+                          Authentication authentication) throws IOException, ImageProcessingException {
         //TODO: MD5校验
 
-
-        return photoService.save(file);
+        photoService.save(file,md5,album,((UserDetails) authentication.getPrincipal()).getUsername());
+        return true;
     }
 
     /**
-     * 获取一张照片
+     * 获取一张照片(原图)
      * @param photo
      *
      * @return
      * @throws IOException
      */
     @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
-    @Cacheable(cacheNames = "photo_file")
-    @GetMapping("/get/{photoId}")
-    public ResponseEntity<InputStreamResource> getPhoto(@PathVariable("photoId") Photo photo) throws IOException {
-        return getPhotoFile(photo);
+    @GetMapping("/get_photo/{id}")
+    public ResponseEntity<InputStreamResource> getPhoto(@PathVariable("id") Photo photo) throws IOException {
+        return getPhotoFile(photo.getFileName(),photo.getName());
     }
 
+    /**
+     * 获取一张照片(缩略图)
+     * @param photo
+     *
+     * @return
+     * @throws IOException
+     */
+    @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
+    @GetMapping("/get_thumbnail_photo/{id}")
+    public ResponseEntity<InputStreamResource> getThumbnailPhoto(@PathVariable("id") Photo photo) throws IOException {
 
+        return getPhotoFile(photo.getThumbnailName(),photo.getName());
+    }
 
 
     /**
@@ -107,23 +120,20 @@ public class PhotoController {
     }
 
 
-    private ResponseEntity<InputStreamResource> getPhotoFile(@NotNull Photo photo) throws IOException {
-        GridFSFile myFile = gridFsTemplate.findOne(query(whereFilename().is(photo.getFileName())));
-        if (myFile==null){
-            return null;
-        }
-        GridFsResource gridFsResource=gridFsTemplate.getResource(myFile);
+    private ResponseEntity<InputStreamResource> getPhotoFile(@NotNull String fileName,String name) throws IOException {
+
+        GridFsResource gridFsResource = photoService.getPhotoResource(fileName);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Cache-Control", "cache, store, must-revalidate");
-        headers.add("Content-Disposition", "attachment; fileName="+  photo.getName() +";filename*=utf-8''"+ URLEncoder.encode(photo.getName(),"UTF-8"));
+        headers.add("Content-Disposition", "attachment; fileName="+  name +";filename*=utf-8''"+ URLEncoder.encode(name,"UTF-8"));
         headers.add("Pragma", "cache");
         headers.add("Expires", "0");
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentLength(myFile.getLength())
+                .contentLength(gridFsResource.contentLength())
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new InputStreamResource(gridFsResource.getInputStream()));
     }
