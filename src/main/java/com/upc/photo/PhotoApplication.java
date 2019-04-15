@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author waiter
  */
-@CacheConfig(keyGenerator = "keyGenerator")
+@CacheConfig(keyGenerator = "keyGenerator",cacheManager = "cacheManager")
 @EnableCaching(proxyTargetClass = true)
 @EnableMongoAuditing
 @EnableAsync

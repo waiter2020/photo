@@ -3,6 +3,8 @@ package com.upc.photo.service;
 import com.drew.imaging.ImageProcessingException;
 import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,4 +34,8 @@ public interface PhotoService {
     Photo findById(BigInteger id);
 
     GridFsResource getPhotoResource(String fileName);
+
+
+    Page<Photo> findAll(String userName, Pageable pageable);
+    Page<Photo> getAlbumPhoto(Album album,Pageable pageable);
 }

@@ -19,6 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -58,8 +61,8 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Async
     @Caching(evict = {
-            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto'+#result.album", allEntries = true),
-            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll'+authentication.principal.username", allEntries = true)
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#result.album+'-*'", allEntries = true),
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+authentication.principal.username+'-*'", allEntries = true)
     })
     @Override
     public void save(MultipartFile file, String md5,Album album,String userName) {
@@ -76,7 +79,6 @@ public class PhotoServiceImpl implements PhotoService {
         photo.setAlbum(album);
         photo.setThumbnailName(uuid + "-" + "thumbnail" + "-" + file.getOriginalFilename());
         photo.setAuthor(userName);
-
         Photo.Location location = photo.getLocationInstance();
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
@@ -88,10 +90,10 @@ public class PhotoServiceImpl implements PhotoService {
                     String desc = tag.getDescription();
                     if ("GPS Latitude".equals(tagName)) {
 
-                        location.setLatitude(desc);
+                        location.setLatitude(pointToLatlong(desc));
                     } else if ("GPS Longitude".equals(tagName)) {
 
-                        location.setLongitude(desc);
+                        location.setLongitude(pointToLatlong(desc));
                     }
                 }
             }
@@ -124,11 +126,32 @@ public class PhotoServiceImpl implements PhotoService {
         photoDao.save(photo);
     }
 
+    /**
+           * 经纬度格式  转换为  度分秒格式 ,如果需要的话可以调用该方法进行转换
+           * @param point 坐标点
+           * @return
+           */
+     private static String pointToLatlong(String point) {
+                 Double du = Double.parseDouble(point.substring(0, point.indexOf("°")).trim());
+                 Double fen = Double.parseDouble(point.substring(point.indexOf("°")+1, point.indexOf("'")).trim());
+                 Double miao = Double.parseDouble(point.substring(point.indexOf("'")+1, point.indexOf("\"")).trim());
+                 Double duStr = du + fen / 60 + miao / 60 / 60 ;
+                 return duStr.toString();
+     }
+
+
 
     @Cacheable(cacheNames = "photos")
     @Override
     public ArrayList<Photo> findAll(String userName) {
+
         return photoDao.findAllByAuthor(userName);
+    }
+
+    @Cacheable(cacheNames = "photos")
+    @Override
+    public Page<Photo> findAll(String userName,Pageable pageable) {
+        return photoDao.findAllByAuthorOrderByCreateDesc(userName, pageable);
     }
 
     @Cacheable(cacheNames = "photos")
@@ -136,6 +159,13 @@ public class PhotoServiceImpl implements PhotoService {
     public ArrayList<Photo> getAlbumPhoto(Album album) {
         return photoDao.findAllByAlbum(album);
     }
+
+    @Cacheable(cacheNames = "photos")
+    @Override
+    public Page<Photo> getAlbumPhoto(Album album,Pageable pageable) {
+        return photoDao.findAllByAlbumOrderByCreateDesc(album,pageable);
+    }
+
 
     @Override
     public Photo findById(BigInteger id) {

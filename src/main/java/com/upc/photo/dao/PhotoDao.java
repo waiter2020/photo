@@ -2,6 +2,8 @@ package com.upc.photo.dao;
 
 import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.math.BigInteger;
@@ -16,4 +18,6 @@ import java.util.ArrayList;
 public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
     ArrayList<Photo> findAllByAuthor(String author);
     ArrayList<Photo> findAllByAlbum(Album album);
+    Page<Photo> findAllByAuthorOrderByCreateDesc(String author, Pageable pageable);
+    Page<Photo> findAllByAlbumOrderByCreateDesc(Album album, Pageable pageable);
 }

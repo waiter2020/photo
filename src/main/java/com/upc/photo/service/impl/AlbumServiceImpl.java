@@ -23,19 +23,19 @@ public class AlbumServiceImpl implements AlbumService {
         this.albumDao = albumDao;
     }
 
-    @CacheEvict(cacheNames = "album",key = "'com.upc.photo.service.impl.AlbumServiceImplgetAllAlbum'+#result.author")
+    @CacheEvict(cacheNames = "album",key = "'com.upc.photo.service.impl.AlbumServiceImpl-getAllAlbum-'+#result.author")
     @Override
     public Album createAlbum(Album album) {
         return albumDao.save(album);
     }
 
-    @CacheEvict(cacheNames = "album",key = "'com.upc.photo.service.impl.AlbumServiceImplgetAllAlbum'+#album.author")
+    @CacheEvict(cacheNames = "album",key = "'com.upc.photo.service.impl.AlbumServiceImpl-getAllAlbum-'+#album.author")
     @Override
     public Album saveAlbum(Album album) {
         return albumDao.save(album);
     }
 
-    @CacheEvict(cacheNames = "album",key = "'com.upc.photo.service.impl.AlbumServiceImplgetAllAlbum'+#album.author")
+    @CacheEvict(cacheNames = "album",key = "'com.upc.photo.service.impl.AlbumServiceImpl-getAllAlbum-'+#album.author")
     @Override
     public void deleteAlbum(Album album) {
          albumDao.delete(album);

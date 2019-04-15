@@ -95,10 +95,16 @@ public class MyUsernamePasswordAuthenticationFilter extends
         while ((s=reader.readLine())!=null){
             string.append(s);
         }
+        String username =null;
+        String password = null;
         ObjectMapper mapper = new ObjectMapper();
-        UserNamePassword userNamePassword = mapper.readValue(string.toString(), UserNamePassword.class);
-        String username = userNamePassword.username;
-        String password = userNamePassword.password;
+        try {
+            UserNamePassword userNamePassword = mapper.readValue(string.toString(), UserNamePassword.class);
+             username = userNamePassword.username;
+             password = userNamePassword.password;
+        }catch (Exception e){
+
+        }
 
         if (username == null) {
             username = "";

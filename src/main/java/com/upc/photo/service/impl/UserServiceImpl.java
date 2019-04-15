@@ -50,7 +50,7 @@ public class UserServiceImpl implements  UserService {
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
         String salt = (String) operations.get("token:"+username);
         Cache cache = cacheManager.getCache("user");
-        User user = cache.get("com.upc.photo.service.impl.UserServiceImplloadUserByUsername" + username, User.class);
+        User user = cache.get("com.upc.photo.service.impl.UserServiceImpl-loadUserByUsername-" + username, User.class);
         if (user==null) {
             user = (User) loadUserByUsername(username);
         }
@@ -93,7 +93,7 @@ public class UserServiceImpl implements  UserService {
        return userDao.save(user);
     }
 
-    @CacheEvict(cacheNames = "user",key = "'com.upc.photo.service.impl.UserServiceImplloadUserByUsername'+#user.username")
+    @CacheEvict(cacheNames = "user",key = "'com.upc.photo.service.impl.UserServiceImpl-loadUserByUsername-'+#user.username")
     @Override
     public User save(User user) {
         return userDao.save(user);

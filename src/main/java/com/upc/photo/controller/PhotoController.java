@@ -7,6 +7,8 @@ import com.upc.photo.model.Photo;
 
 import com.upc.photo.model.PhotoType;
 import com.upc.photo.service.PhotoService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +18,8 @@ import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilena
 
 import com.mongodb.client.gridfs.GridFSBuckets;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -45,6 +49,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/photo")
+@Api
 public class PhotoController {
 
     private final GridFsTemplate gridFsTemplate;
@@ -57,6 +62,7 @@ public class PhotoController {
         this.photoService = photoService;
     }
 
+    @ApiOperation("上传图片")
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/upload")
     public Boolean upload(@RequestParam("file") MultipartFile  file,
@@ -76,6 +82,7 @@ public class PhotoController {
      * @return
      * @throws IOException
      */
+    @ApiOperation("获取原始图片")
     @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
     @GetMapping("/get_photo/{id}")
     public ResponseEntity<InputStreamResource> getPhoto(@PathVariable("id") Photo photo) throws IOException {
@@ -89,6 +96,7 @@ public class PhotoController {
      * @return
      * @throws IOException
      */
+    @ApiOperation("获取缩略图")
     @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
     @GetMapping("/get_thumbnail_photo/{id}")
     public ResponseEntity<InputStreamResource> getThumbnailPhoto(@PathVariable("id") Photo photo) throws IOException {
@@ -102,10 +110,20 @@ public class PhotoController {
      * @param authentication
      * @return
      */
-    @GetMapping("/get_all")
-    public ArrayList<Photo> getAllPhoto(Authentication authentication){
+    @ApiOperation("获取用户所有照片")
+    @GetMapping({"/get_all/{page}/{pageSize}","/get_all","/get_all/{page}"})
+    public Page<Photo> getAllPhoto(Authentication authentication,
+                                   @PathVariable(value = "page",required = false)Integer page,
+                                   @PathVariable(value = "pageSize",required = false)Integer pageSize ){
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-        return photoService.findAll(username);
+        if (page==null){
+            page=0;
+        }
+        if (pageSize==null){
+            pageSize=20;
+        }
+
+        return photoService.findAll(username,PageRequest.of(page,pageSize));
     }
 
     /**
@@ -113,10 +131,20 @@ public class PhotoController {
      * @param album
      * @return
      */
+    @ApiOperation("获取相册所有照片")
     @PreAuthorize("#album.author==authentication.principal.username or hasAuthority('ADMIN')")
-    @GetMapping("/get_album_photos/{id}")
-    public ArrayList<Photo> getAlbumPhotos(@PathVariable("id")Album album){
-        return photoService.getAlbumPhoto(album);
+    @GetMapping({"/get_album_photos/{id}","/get_album_photos/{id}/{page}","/get_album_photos/{id}/{page}/{pageSize}"})
+    public Page<Photo> getAlbumPhotos(@PathVariable("id")Album album,
+                                           @PathVariable(value = "page",required = false)Integer page,
+                                           @PathVariable(value = "pageSize",required = false)Integer pageSize){
+
+        if (page==null){
+            page=0;
+        }
+        if (pageSize==null){
+            pageSize=20;
+        }
+        return photoService.getAlbumPhoto(album,PageRequest.of(page,pageSize));
     }
 
 

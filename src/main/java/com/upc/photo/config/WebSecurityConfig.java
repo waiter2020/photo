@@ -46,7 +46,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/swagger-ui.html","/v2/api-docs","/webjars/**").permitAll()
                 //静态资源访问无需认证
+                .antMatchers("/swagger-resources/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
                 .antMatchers("/user/add").permitAll()
                 //admin开头的请求，需要admin权限
                 .antMatchers("/admin/**").hasAnyRole("ADMIN")
