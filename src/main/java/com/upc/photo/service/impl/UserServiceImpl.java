@@ -19,6 +19,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -35,9 +36,9 @@ public class UserServiceImpl implements  UserService {
     private final RedisTemplate redisTemplate;
     private PasswordEncoder passwordEncoder;
     private final UserDao userDao;
-    private final RedisCacheManager cacheManager;
+    private final CacheManager cacheManager;
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    public UserServiceImpl(RedisTemplate redisTemplate, UserDao userDao, RedisCacheManager cacheManager) {
+    public UserServiceImpl(RedisTemplate redisTemplate, UserDao userDao, CacheManager cacheManager) {
         this.redisTemplate = redisTemplate;
         this.userDao = userDao;
         this.cacheManager = cacheManager;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements  UserService {
         this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+    @Cacheable(cacheNames = "user")
     @Override
     public UserDetails getUserLoginInfo(String username) {
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
@@ -77,7 +79,7 @@ public class UserServiceImpl implements  UserService {
                 .sign(algorithm);
     }
 
-    @Cacheable(cacheNames = "user")
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userDao.findByUsername(username);
@@ -93,7 +95,7 @@ public class UserServiceImpl implements  UserService {
        return userDao.save(user);
     }
 
-    @CacheEvict(cacheNames = "user",key = "'com.upc.photo.service.impl.UserServiceImpl-loadUserByUsername-'+#user.username")
+    @CacheEvict(cacheNames = "user",key = "'com.upc.photo.service.impl.UserServiceImpl-getUserLoginInfo-'+#user.username")
     @Override
     public User save(User user) {
         return userDao.save(user);

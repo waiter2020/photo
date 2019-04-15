@@ -11,6 +11,7 @@ import com.upc.photo.dao.PhotoDao;
 import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 import com.upc.photo.model.PhotoType;
+import com.upc.photo.model.RestPage;
 import com.upc.photo.service.PhotoService;
 import com.upc.photo.utils.GetAddressByBaidu;
 import net.coobird.thumbnailator.Thumbnails;
@@ -150,8 +151,8 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Cacheable(cacheNames = "photos")
     @Override
-    public Page<Photo> findAll(String userName,Pageable pageable) {
-        return photoDao.findAllByAuthorOrderByCreateDesc(userName, pageable);
+    public Page<Photo> findAll(String userName, Pageable pageable) {
+        return new RestPage<>(photoDao.findAllByAuthorOrderByCreateDesc(userName, pageable));
     }
 
     @Cacheable(cacheNames = "photos")
@@ -163,7 +164,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Cacheable(cacheNames = "photos")
     @Override
     public Page<Photo> getAlbumPhoto(Album album,Pageable pageable) {
-        return photoDao.findAllByAlbumOrderByCreateDesc(album,pageable);
+        return new RestPage<>(photoDao.findAllByAlbumOrderByCreateDesc(album,pageable));
     }
 
 

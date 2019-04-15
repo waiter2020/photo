@@ -1,7 +1,9 @@
 package com.upc.photo.model;
 
 import com.drew.metadata.Tag;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.upc.photo.component.BigIntegerJsonDeSerializer;
 import com.upc.photo.component.BigIntegerJsonSerializer;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
@@ -30,6 +32,7 @@ public class Photo implements Serializable{
 
     @Indexed
     @JsonSerialize(using = BigIntegerJsonSerializer.class)
+    @JsonDeserialize(using = BigIntegerJsonDeSerializer.class)
     private BigInteger id;
 
     @CreatedBy
@@ -71,7 +74,7 @@ public class Photo implements Serializable{
     }
 
     @Data
-    public class Location implements Serializable {
+    public static class Location implements Serializable {
         /**
          *  纬度
          *  */

@@ -1,6 +1,10 @@
 package com.upc.photo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import com.upc.photo.component.UserSerializer;
 import lombok.Data;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +23,7 @@ import java.util.List;
  */
 @Entity
 @Data
+@JsonSerialize(using = UserSerializer.class)
 public class User implements UserDetails , Serializable {
 
     @Id
@@ -35,7 +40,10 @@ public class User implements UserDetails , Serializable {
 
     private String email;
 
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+
+
+
+    @ManyToMany(cascade = CascadeType.REFRESH,fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
@@ -89,5 +97,17 @@ public class User implements UserDetails , Serializable {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", authorities=" + authorities +
+                '}';
     }
 }
