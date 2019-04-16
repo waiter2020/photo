@@ -19,7 +19,7 @@ spring:
 
   data:
     mongodb:
-      host: 127.0.0.1
+      host: 59.110.163.243
       port: 27017
       database: photo
       grid-fs-database: photo-files
@@ -44,7 +44,7 @@ spring:
 logging:
   file: photo.log
   level:
-    org.springframework: warn
+    org.springframework: info
     com.upc.photo: trace
 server:
   port: 8086

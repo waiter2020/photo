@@ -60,29 +60,15 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
 
-    @Async
     @Caching(evict = {
             @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#result.album+'-*'", allEntries = true),
             @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+authentication.principal.username+'-*'", allEntries = true)
     })
     @Override
-    public void save(MultipartFile file, String md5,Album album,String userName) {
-
-        save(file,album,userName);
-    }
-
-
-    private void save(MultipartFile file,Album album,String userName) {
-        UUID uuid = UUID.randomUUID();
-        Photo photo = new Photo();
-        photo.setName(file.getOriginalFilename());
-        photo.setFileName(uuid + "-" + file.getOriginalFilename());
-        photo.setAlbum(album);
-        photo.setThumbnailName(uuid + "-" + "thumbnail" + "-" + file.getOriginalFilename());
-        photo.setAuthor(userName);
+    public void saveFile(byte[] bytes,Photo photo, String md5,Album album,String userName) {
         Photo.Location location = photo.getLocationInstance();
         try {
-            Metadata metadata = ImageMetadataReader.readMetadata(file.getInputStream());
+            Metadata metadata = ImageMetadataReader.readMetadata(new ByteArrayInputStream(bytes));
             for (Directory directory : metadata.getDirectories()) {
                 for (Tag tag : directory.getTags()) {
                     //标签名
@@ -115,16 +101,22 @@ public class PhotoServiceImpl implements PhotoService {
 
             //TODO:调用py接口获取照片类别
             photo.setType(PhotoType.SCENERY);
-            gridFsTemplate.store(file.getInputStream(), uuid + "-" + file.getOriginalFilename());
+            ObjectId store = gridFsTemplate.store(new ByteArrayInputStream(bytes), photo.getThumbnailName());
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            Thumbnails.of(file.getInputStream())
+            Thumbnails.of(new ByteArrayInputStream(bytes))
                     .scale(0.25f)
                     .toOutputStream(byteArrayOutputStream);
-            gridFsTemplate.store(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), photo.getThumbnailName());
+            ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), photo.getThumbnailName());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        photoDao.save(photo);
+    }
+
+
+    @Override
+    public Photo save(Photo photo) {
+        return photoDao.save(photo);
     }
 
     /**

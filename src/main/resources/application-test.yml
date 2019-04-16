@@ -44,5 +44,5 @@ spring:
 
 logging:
   level:
-    org.springframework: warn
+    org.springframework: info
     com.upc.photo: trace

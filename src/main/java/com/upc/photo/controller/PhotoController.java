@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -65,15 +65,49 @@ public class PhotoController {
     @ApiOperation("上传图片")
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/upload")
-    public Boolean upload(@RequestParam("file") MultipartFile  file,
+    public Photo upload(@RequestParam("file") MultipartFile  file,
                          @RequestParam(name = "md5",required = false) String md5,
                           @RequestParam(name = "id",required = false)Album album,
                           Authentication authentication) throws IOException, ImageProcessingException {
         //TODO: MD5校验
-
-        photoService.save(file,md5,album,((UserDetails) authentication.getPrincipal()).getUsername());
-        return true;
+        UUID uuid = UUID.randomUUID();
+        Photo photo = new Photo();
+        photo.setName(file.getOriginalFilename());
+        photo.setFileName(uuid + "-" + file.getOriginalFilename());
+        photo.setAlbum(album);
+        photo.setThumbnailName(uuid + "-" + "thumbnail" + "-" + file.getOriginalFilename());
+        photoService.saveFile(inputStreamConvertToByteArray(file.getInputStream()),photo,md5,album,((UserDetails) authentication.getPrincipal()).getUsername());
+        return photoService.save(photo);
     }
+
+    /**
+     * 把一个文件转化为byte字节数组。
+     *
+     * @return
+     */
+    private byte[] inputStreamConvertToByteArray(InputStream fis) {
+        byte[] data = null;
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            int len;
+            byte[] buffer = new byte[1024];
+            while ((len = fis.read(buffer)) != -1) {
+                baos.write(buffer, 0, len);
+            }
+
+            data = baos.toByteArray();
+
+            fis.close();
+            baos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
 
     /**
      * 获取一张照片(原图)

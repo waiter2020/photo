@@ -46,7 +46,7 @@ public class UserServiceImpl implements  UserService {
         this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Cacheable(cacheNames = "user")
+
     @Override
     public User getUserLoginInfo(String username) {
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
@@ -79,7 +79,7 @@ public class UserServiceImpl implements  UserService {
                 .sign(algorithm);
     }
 
-
+    @Cacheable(cacheNames = "user")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userDao.findByUsername(username);

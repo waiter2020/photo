@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @CacheConfig(keyGenerator = "keyGenerator",cacheManager = "cacheManager")
 @EnableCaching(proxyTargetClass = true)
 @EnableMongoAuditing
-@EnableAsync
+@EnableAsync(proxyTargetClass = true)
+@EnableTransactionManagement(proxyTargetClass = true)
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableSpringDataWebSupport
 @SpringBootApplication

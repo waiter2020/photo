@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.concurrent.Future;
@@ -24,9 +25,12 @@ import java.util.concurrent.Future;
 public interface PhotoService {
     /**
      * @param photo
+     * @param photo
      * @return
      */
-    void save(MultipartFile photo,String md5,Album album,String userName) throws IOException, ImageProcessingException;
+    void saveFile(byte[] bytes, Photo photo, String md5, Album album, String userName) throws IOException, ImageProcessingException;
+
+    Photo save(Photo photo);
 
     ArrayList<Photo> findAll(String userName);
 
