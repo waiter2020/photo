@@ -2,9 +2,12 @@ package com.upc.photo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import com.upc.photo.component.UserSerializer;
+import com.upc.photo.component.UserJsonDeSerializer;
+import com.upc.photo.component.UserJsonSerializer;
+
 import lombok.Data;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +26,8 @@ import java.util.List;
  */
 @Entity
 @Data
-@JsonSerialize(using = UserSerializer.class)
+@JsonSerialize(using = UserJsonSerializer.class)
+@JsonDeserialize(using = UserJsonDeSerializer.class)
 public class User implements UserDetails , Serializable {
 
     @Id

@@ -48,7 +48,7 @@ public class UserServiceImpl implements  UserService {
 
     @Cacheable(cacheNames = "user")
     @Override
-    public UserDetails getUserLoginInfo(String username) {
+    public User getUserLoginInfo(String username) {
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
         String salt = (String) operations.get("token:"+username);
         Cache cache = cacheManager.getCache("user");

@@ -1,5 +1,8 @@
 package com.upc.photo.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONType;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Page;
@@ -18,7 +21,8 @@ import java.util.stream.Collectors;
  * @Date: 2019/4/15 22:20
  * @Version 1.0
  */
-
+@Data
+@JSONType(ignores = "pageable")
 public class RestPage<T> implements Page<T> {
     private List<T> content;
 
@@ -56,6 +60,8 @@ public class RestPage<T> implements Page<T> {
         return total;
     }
 
+
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public <U> Page<U> map(Function<? super T, ? extends U> converter) {
         return new RestPage<>(getConvertedContent(converter), getPageable(), total);
@@ -65,6 +71,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#hasNext()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public boolean hasNext() {
         return getNumber() + 1 < getTotalPages();
@@ -92,6 +99,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#getNumberOfElements()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public int getNumberOfElements() {
         return content.size();
@@ -101,6 +109,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#hasPrevious()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public boolean hasPrevious() {
         return getNumber() > 0;
@@ -110,6 +119,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#isFirst()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public boolean isFirst() {
         return !hasPrevious();
@@ -119,6 +129,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#isLast()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public boolean isLast() {
         return !hasNext();
@@ -128,6 +139,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#nextPageable()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public Pageable nextPageable() {
         return  Pageable.unpaged();
@@ -137,6 +149,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#previousPageable()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public Pageable previousPageable() {
         return  Pageable.unpaged();
@@ -146,6 +159,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#hasContent()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public boolean hasContent() {
         return !content.isEmpty();
@@ -157,13 +171,14 @@ public class RestPage<T> implements Page<T> {
      */
     @Override
     public List<T> getContent() {
-        return Collections.unmodifiableList(content);
+        return content==null?null:Collections.unmodifiableList(content);
     }
 
     /*
      * (non-Javadoc)
      * @see org.springframework.data.domain.Slice#getSort()
      */
+    @JSONField(serialize = false,deserialize = false)
     @Override
     public Sort getSort() {
         return null;
@@ -173,6 +188,7 @@ public class RestPage<T> implements Page<T> {
      * (non-Javadoc)
      * @see java.lang.Iterable#iterator()
      */
+
     public Iterator<T> iterator() {
         return content.iterator();
     }
@@ -187,7 +203,7 @@ public class RestPage<T> implements Page<T> {
 
         Assert.notNull(converter, "Function must not be null!");
 
-        return this.stream().map(converter::apply).collect(Collectors.toList());
+        return this.stream().map(converter).collect(Collectors.toList());
     }
 
 

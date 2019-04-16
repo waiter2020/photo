@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.upc.photo.component.BigIntegerJsonDeSerializer;
 
-import com.upc.photo.component.UserSerializer;
+
+import com.upc.photo.component.FastJsonRedisSerializer;
+import com.upc.photo.component.UserJsonDeSerializer;
 import com.upc.photo.model.User;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -71,7 +73,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(600))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer()))
                 .disableCachingNullValues();
 
         RedisCacheManager cacheManager = MyRedisCacheManager.builder(factory)
@@ -80,26 +82,8 @@ public class RedisConfig extends CachingConfigurerSupport {
         return cacheManager;
     }
 
-
-    private Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer(){
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper om = new ObjectMapper();
-        //序列化的时候序列对象的所有属性
-        om.setSerializationInclusion(JsonInclude.Include.ALWAYS);
-
-        //反序列化的时候如果多了其他属性,不抛出异常
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        //如果是空对象的时候,不抛异常
-        om.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(BigInteger.class, new BigIntegerJsonDeSerializer());
-        om.registerModule(module);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
-        return jackson2JsonRedisSerializer;
+    private FastJsonRedisSerializer<Object> fastJsonRedisSerializer(){
+        return new FastJsonRedisSerializer<>(Object.class);
     }
 
 
@@ -110,7 +94,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
         StringRedisTemplate template = new StringRedisTemplate(factory);
 
-        template.setValueSerializer(jackson2JsonRedisSerializer());
+        template.setValueSerializer(fastJsonRedisSerializer());
         template.setKeySerializer(new StringRedisSerializer());
         template.afterPropertiesSet();
         return template;
