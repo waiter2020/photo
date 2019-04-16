@@ -60,8 +60,15 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
 
+    @Override
+    public void delete(Photo photo) {
+        gridFsTemplate.delete(query(whereFilename().is(photo.getFileName())));
+        gridFsTemplate.delete(query(whereFilename().is(photo.getThumbnailName())));
+        photoDao.delete(photo);
+    }
+
     @Caching(evict = {
-            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#result.album+'-*'", allEntries = true),
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#album+'-*'", allEntries = true),
             @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+authentication.principal.username+'-*'", allEntries = true)
     })
     @Override
@@ -101,10 +108,10 @@ public class PhotoServiceImpl implements PhotoService {
 
             //TODO:调用py接口获取照片类别
             photo.setType(PhotoType.SCENERY);
-            ObjectId store = gridFsTemplate.store(new ByteArrayInputStream(bytes), photo.getThumbnailName());
+            ObjectId store = gridFsTemplate.store(new ByteArrayInputStream(bytes), photo.getFileName());
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             Thumbnails.of(new ByteArrayInputStream(bytes))
-                    .scale(0.25f)
+                    .size(400,200)
                     .toOutputStream(byteArrayOutputStream);
             ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), photo.getThumbnailName());
 
@@ -176,5 +183,11 @@ public class PhotoServiceImpl implements PhotoService {
         }
        return gridFsTemplate.getResource(myFile);
 
+    }
+
+    @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#result.album+'-*'", allEntries = true)
+    @Override
+    public Photo changeToAlbum(Photo photo) {
+        return photo;
     }
 }

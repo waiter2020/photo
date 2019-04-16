@@ -69,6 +69,8 @@ public class PhotoController {
                          @RequestParam(name = "md5",required = false) String md5,
                           @RequestParam(name = "id",required = false)Album album,
                           Authentication authentication) throws IOException, ImageProcessingException {
+
+
         //TODO: MD5校验
         UUID uuid = UUID.randomUUID();
         Photo photo = new Photo();
@@ -79,6 +81,23 @@ public class PhotoController {
         photoService.saveFile(inputStreamConvertToByteArray(file.getInputStream()),photo,md5,album,((UserDetails) authentication.getPrincipal()).getUsername());
         return photoService.save(photo);
     }
+
+    @ApiOperation("将图片分类到某个相册")
+    @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
+    @PostMapping("/change_to_album")
+    public Photo changeToAlbum(@RequestParam("albumId")Album album,
+                               @RequestParam("photoId")Photo photo){
+        photo.setAlbum(album);
+        return photoService.changeToAlbum(photo);
+    }
+
+    @ApiOperation("删除图片")
+    @PreAuthorize("#photo.author==authentication.principal.username or hasAuthority('ADMIN')")
+    @PostMapping("/delete")
+    public void delete(@RequestParam("id") Photo photo){
+        photoService.delete(photo);
+    }
+
 
     /**
      * 把一个文件转化为byte字节数组。

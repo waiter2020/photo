@@ -23,6 +23,8 @@ import java.util.concurrent.Future;
  */
 
 public interface PhotoService {
+    void delete(Photo photo);
+
     /**
      * @param photo
      * @param photo
@@ -40,6 +42,7 @@ public interface PhotoService {
 
     GridFsResource getPhotoResource(String fileName);
 
+    Photo changeToAlbum(Photo photo);
 
     Page<Photo> findAll(String userName, Pageable pageable);
     Page<Photo> getAlbumPhoto(Album album,Pageable pageable);
