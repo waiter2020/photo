@@ -14,6 +14,7 @@ import com.upc.photo.model.PhotoType;
 import com.upc.photo.model.RestPage;
 import com.upc.photo.service.PhotoService;
 import com.upc.photo.utils.GetAddressByBaidu;
+import com.upc.photo.utils.GetPhotoType;
 import net.coobird.thumbnailator.Thumbnails;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
@@ -67,12 +68,13 @@ public class PhotoServiceImpl implements PhotoService {
         photoDao.delete(photo);
     }
 
+    @Async
     @Caching(evict = {
-            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#album+'-*'", allEntries = true),
-            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+authentication.principal.username+'-*'", allEntries = true)
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#photo.album+'-*'", allEntries = true),
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+#photo.author+'-*'", allEntries = true)
     })
     @Override
-    public void saveFile(byte[] bytes,Photo photo, String md5,Album album,String userName) {
+    public void saveFile(byte[] bytes,Photo photo, String md5) {
         Photo.Location location = photo.getLocationInstance();
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(new ByteArrayInputStream(bytes));
@@ -104,10 +106,7 @@ public class PhotoServiceImpl implements PhotoService {
                 photo.setCreate(date);
 
             }
-            photo.setAddress(GetAddressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
 
-            //TODO:调用py接口获取照片类别
-            photo.setType(PhotoType.SCENERY);
             ObjectId store = gridFsTemplate.store(new ByteArrayInputStream(bytes), photo.getFileName());
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             Thumbnails.of(new ByteArrayInputStream(bytes))
@@ -115,9 +114,13 @@ public class PhotoServiceImpl implements PhotoService {
                     .toOutputStream(byteArrayOutputStream);
             ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), photo.getThumbnailName());
 
+            photo.setAddress(GetAddressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
+            //TODO:调用py接口获取照片类别
+            photo.setType(GetPhotoType.getPhotoType(bytes));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        save(photo);
     }
 
 

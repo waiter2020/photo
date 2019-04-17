@@ -30,7 +30,7 @@ public interface PhotoService {
      * @param photo
      * @return
      */
-    void saveFile(byte[] bytes, Photo photo, String md5, Album album, String userName) throws IOException, ImageProcessingException;
+    void saveFile(byte[] bytes, Photo photo, String md5) throws IOException, ImageProcessingException;
 
     Photo save(Photo photo);
 

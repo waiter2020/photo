@@ -10,5 +10,5 @@ public enum PhotoType{
      * FIGURE 人物
      * SCENERY 风景
      */
-    FIGURE,SCENERY
+    DEFAULT,FIGURE,SCENERY,DOG,CAT
 }

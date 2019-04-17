@@ -67,7 +67,7 @@ public class UserServiceImpl implements  UserService {
         String salt = BCrypt.gensalt();
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
         operations.set("token:"+user.getUsername(), salt);
-        redisTemplate.expire("token:" + user.getUsername(), 3600, TimeUnit.SECONDS);
+        redisTemplate.expire("token:" + user.getUsername(), 1800, TimeUnit.SECONDS);
 
         Algorithm algorithm = Algorithm.HMAC256(salt);
         //设置1小时后过期

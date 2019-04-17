@@ -65,7 +65,7 @@ public class PhotoController {
     @ApiOperation("上传图片")
     @Transactional(rollbackFor = Exception.class)
     @PostMapping("/upload")
-    public Photo upload(@RequestParam("file") MultipartFile  file,
+    public Boolean upload(@RequestParam("file") MultipartFile  file,
                          @RequestParam(name = "md5",required = false) String md5,
                           @RequestParam(name = "id",required = false)Album album,
                           Authentication authentication) throws IOException, ImageProcessingException {
@@ -77,9 +77,10 @@ public class PhotoController {
         photo.setName(file.getOriginalFilename());
         photo.setFileName(uuid + "-" + file.getOriginalFilename());
         photo.setAlbum(album);
+        photo.setAuthor(((UserDetails) authentication.getPrincipal()).getUsername());
         photo.setThumbnailName(uuid + "-" + "thumbnail" + "-" + file.getOriginalFilename());
-        photoService.saveFile(inputStreamConvertToByteArray(file.getInputStream()),photo,md5,album,((UserDetails) authentication.getPrincipal()).getUsername());
-        return photoService.save(photo);
+        photoService.saveFile(inputStreamConvertToByteArray(file.getInputStream()),photo,md5);
+        return true;
     }
 
     @ApiOperation("将图片分类到某个相册")
