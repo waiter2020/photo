@@ -1,4 +1,4 @@
-FROM java:8
+FROM digitalgenius/alpine-jdk
 VOLUME /data
 # Add the service itself
 ARG JAR_FILE
