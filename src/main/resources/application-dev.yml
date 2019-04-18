@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/photo?useSSL=false
+    url: jdbc:mysql://59.110.163.243:3306/photo?useSSL=false
     username: waiter
     password: 690818
 
@@ -25,13 +25,14 @@ spring:
       grid-fs-database: photo-files
 
   redis:
-    host: 127.0.0.1
+    host: 59.110.163.243
     port: 6379
 
   servlet:
     multipart:
-      max-request-size: 30000000
+      max-request-size: 300MB
       enabled: true
+      max-file-size: 30MB
   devtools:
     restart:
       enabled: true
@@ -46,5 +47,6 @@ logging:
   level:
     org.springframework: info
     com.upc.photo: trace
+
 server:
   port: 8086

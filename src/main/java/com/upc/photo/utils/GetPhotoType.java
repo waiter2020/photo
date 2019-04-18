@@ -86,6 +86,9 @@ public class GetPhotoType {
 
     private static PhotoType getResult(Result result){
         Double[][] predictions = result.getPredictions();
+        if(predictions[0][0]<0.7&&predictions[0][1]<0.7){
+            return PhotoType.DEFAULT;
+        }
         if (predictions[0][0]>predictions[0][1]){
             return PhotoType.CAT;
         }else {
