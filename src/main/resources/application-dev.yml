@@ -43,7 +43,7 @@ spring:
       time-to-live: 600000
 
 logging:
-  file: photo.log
+  file: /data/photo.log
   level:
     org.springframework: info
     com.upc.photo: trace
