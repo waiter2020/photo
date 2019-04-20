@@ -36,7 +36,7 @@ public class AlbumController {
      */
     @ApiOperation(value = "创建相册")
     @PostMapping("/create")
-    public Album createAlbum(Album album){
+    public Album createAlbum(@RequestBody Album album){
         return albumService.createAlbum(album);
     }
 

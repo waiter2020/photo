@@ -188,7 +188,7 @@ public class PhotoController {
     @ApiOperation("获取相册所有照片")
     @PreAuthorize("#album.author==authentication.principal.username or hasAuthority('ADMIN')")
     @GetMapping({"/get_album_photos/{id}","/get_album_photos/{id}/{page}","/get_album_photos/{id}/{page}/{pageSize}"})
-    public Page<Photo> getAlbumPhotos(@PathVariable("id")Album album,
+    public Page<Photo> getAlbumPhotos(     @PathVariable("id")Album album,
                                            @PathVariable(value = "page",required = false)Integer page,
                                            @PathVariable(value = "pageSize",required = false)Integer pageSize){
 
