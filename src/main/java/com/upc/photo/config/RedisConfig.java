@@ -1,5 +1,8 @@
 package com.upc.photo.config;
 
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -10,8 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.upc.photo.component.BigIntegerJsonDeSerializer;
 
 
-import com.upc.photo.component.FastJsonRedisSerializer;
-import com.upc.photo.component.UserJsonDeSerializer;
+import com.upc.photo.component.GenericJackson2JsonRedisSerializerEx;
 import com.upc.photo.model.User;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -73,7 +75,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(600))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(genericJackson2JsonRedisSerializer()))
                 .disableCachingNullValues();
 
         RedisCacheManager cacheManager = MyRedisCacheManager.builder(factory)
@@ -83,7 +85,19 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     private FastJsonRedisSerializer<Object> fastJsonRedisSerializer(){
-        return new FastJsonRedisSerializer<>(Object.class);
+        FastJsonConfig fastJsonConfig = new FastJsonConfig();
+        ParserConfig parserConfig = fastJsonConfig.getParserConfig();
+        parserConfig.addAccept("com.upc.photo.model.");
+        parserConfig.addAccept("org.springframework.");
+        fastJsonConfig.setParserConfig(parserConfig);
+        FastJsonRedisSerializer<Object> objectFastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
+        objectFastJsonRedisSerializer.setFastJsonConfig(fastJsonConfig);
+        return objectFastJsonRedisSerializer;
+    }
+
+    private GenericJackson2JsonRedisSerializerEx genericJackson2JsonRedisSerializer(){
+
+        return new GenericJackson2JsonRedisSerializerEx();
     }
 
 
@@ -94,7 +108,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
         StringRedisTemplate template = new StringRedisTemplate(factory);
 
-        template.setValueSerializer(fastJsonRedisSerializer());
+        template.setValueSerializer(genericJackson2JsonRedisSerializer());
         template.setKeySerializer(new StringRedisSerializer());
         template.afterPropertiesSet();
         return template;

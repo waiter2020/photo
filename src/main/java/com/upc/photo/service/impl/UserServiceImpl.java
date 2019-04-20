@@ -1,5 +1,6 @@
 package com.upc.photo.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.upc.photo.dao.UserDao;
@@ -36,12 +37,11 @@ public class UserServiceImpl implements  UserService {
     private final RedisTemplate redisTemplate;
     private PasswordEncoder passwordEncoder;
     private final UserDao userDao;
-    private final CacheManager cacheManager;
+
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    public UserServiceImpl(RedisTemplate redisTemplate, UserDao userDao, CacheManager cacheManager) {
+    public UserServiceImpl(RedisTemplate redisTemplate, UserDao userDao) {
         this.redisTemplate = redisTemplate;
         this.userDao = userDao;
-        this.cacheManager = cacheManager;
         //默认使用 bcrypt， strength=10
         this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
@@ -51,11 +51,9 @@ public class UserServiceImpl implements  UserService {
     public User getUserLoginInfo(String username) {
         ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
         String salt = (String) operations.get("token:"+username);
-        Cache cache = cacheManager.getCache("user");
-        User user = cache.get("com.upc.photo.service.impl.UserServiceImpl-loadUserByUsername-" + username, User.class);
-        if (user==null) {
-            user = (User) loadUserByUsername(username);
-        }
+
+        User user = (User) loadUserByUsername(username);
+
 
         //将salt放到password字段返回
         user.setPassword(salt);
@@ -79,12 +77,17 @@ public class UserServiceImpl implements  UserService {
                 .sign(algorithm);
     }
 
-    @Cacheable(cacheNames = "user")
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByUsername(username);
-        if (user==null){
-            user = new User();
+        User user = getCache("user:" + username);
+
+        if (user==null) {
+            user = userDao.findByUsername(username);
+        }
+
+        if (user!=null){
+            setCache("user:"+username,user);
         }
         return user;
     }
@@ -95,9 +98,26 @@ public class UserServiceImpl implements  UserService {
        return userDao.save(user);
     }
 
-    @CacheEvict(cacheNames = "user",key = "'com.upc.photo.service.impl.UserServiceImpl-getUserLoginInfo-'+#user.username")
+    private void removeCache(String key){
+        redisTemplate.delete(key);
+    }
+
+    private void setCache(String key,User user){
+        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+        operations.set(key, JSON.toJSONString(user));
+        redisTemplate.expire(key, 1800, TimeUnit.SECONDS);
+    }
+
+
+    private User getCache(String key){
+        ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+        String src = (String) operations.get(key);
+        return JSON.parseObject(src,User.class);
+    }
+
     @Override
     public User save(User user) {
+        removeCache("user:"+user.getUsername());
         return userDao.save(user);
     }
 

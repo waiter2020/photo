@@ -1,5 +1,6 @@
 package com.upc.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -16,6 +17,7 @@ import java.io.Serializable;
  */
 @Entity
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Role implements GrantedAuthority , Serializable {
 
     @Id

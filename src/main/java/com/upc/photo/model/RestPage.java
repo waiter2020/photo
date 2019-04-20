@@ -2,6 +2,7 @@ package com.upc.photo.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @Data
 @JSONType(ignores = "pageable")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RestPage<T> implements Page<T> {
     private List<T> content;
 

@@ -40,8 +40,7 @@ public class AlbumServiceImpl implements AlbumService {
     public void deleteAlbum(Album album) {
          albumDao.delete(album);
     }
-
-//    @Cacheable(cacheNames = "album")
+    @Cacheable(cacheNames = "album")
     @Override
     public ArrayList<Album> getAllAlbum(String author) {
         return albumDao.findAllByAuthor(author);

@@ -1,5 +1,6 @@
 package com.upc.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.upc.photo.component.BigIntegerJsonSerializer;
 import lombok.Data;
@@ -21,6 +22,7 @@ import java.util.Date;
  */
 @Document
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Album implements Serializable {
 
     @Indexed

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import com.upc.photo.component.UserJsonDeSerializer;
-import com.upc.photo.component.UserJsonSerializer;
+
 
 import lombok.Data;
 import lombok.Setter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,8 +26,6 @@ import java.util.List;
  */
 @Entity
 @Data
-@JsonSerialize(using = UserJsonSerializer.class)
-@JsonDeserialize(using = UserJsonDeSerializer.class)
 public class User implements UserDetails , Serializable {
 
     @Id
@@ -47,6 +45,7 @@ public class User implements UserDetails , Serializable {
 
 
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.REFRESH,fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",

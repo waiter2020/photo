@@ -1,6 +1,7 @@
 package com.upc.photo.model;
 
 import com.drew.metadata.Tag;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.upc.photo.component.BigIntegerJsonDeSerializer;
@@ -28,6 +29,7 @@ import java.util.UUID;
  */
 @Data
 @Document
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Photo implements Serializable{
 
     @Indexed
