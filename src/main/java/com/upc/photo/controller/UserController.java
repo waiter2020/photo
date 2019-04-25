@@ -6,6 +6,7 @@ import com.upc.photo.service.RoleService;
 import com.upc.photo.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,7 @@ public class UserController {
     @ApiOperation("修改昵称")
     @PostMapping("/change_nick_name")
     public User changeNickName(String nickName,Authentication authentication){
-        User user = (User) authentication.getPrincipal();
+        User user = (User) userService.loadUserByUsername(((User) authentication.getPrincipal()).getUsername());
         user.setNickname(nickName);
         return userService.save(user);
     }
