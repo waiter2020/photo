@@ -61,6 +61,10 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#photo.album+'-*'", allEntries = true),
+            @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+#photo.author+'-*'", allEntries = true)
+    })
     @Override
     public void delete(Photo photo) {
         gridFsTemplate.delete(query(whereFilename().is(photo.getFileName())));

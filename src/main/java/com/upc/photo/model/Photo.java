@@ -1,6 +1,7 @@
 package com.upc.photo.model;
 
 import com.drew.metadata.Tag;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -71,6 +72,7 @@ public class Photo implements Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date modify;
 
+    @JsonIgnore
     public Location getLocationInstance(){
         return new Location();
     }

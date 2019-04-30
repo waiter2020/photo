@@ -17,6 +17,10 @@ import java.util.ArrayList;
  */
 
 public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
+
+    Long countAllByAuthorAndAddress_City(String userName,String cityName);
+    Photo findTopByAuthorAndAddress_City(String cityName);
+
     ArrayList<Photo> findAllByAuthor(String author);
     ArrayList<Photo> findAllByAlbum(Album album);
     Page<Photo> findAllByAuthorOrderByCreateDesc(String author, Pageable pageable);

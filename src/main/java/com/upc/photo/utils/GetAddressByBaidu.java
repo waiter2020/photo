@@ -43,7 +43,7 @@ public class GetAddressByBaidu {
                     string.append(data);
                 }
                 ObjectMapper mapper = new ObjectMapper();
-                String substring = string.substring(string.indexOf("(")+1, string.indexOf(")"));
+                String substring = string.substring(string.indexOf("(")+1, string.lastIndexOf(")"));
                 JsonNode rootNode = mapper.readTree(substring);
                 JsonNode result = rootNode.get("result");
                 JsonNode addressComponent = result.get("addressComponent");
