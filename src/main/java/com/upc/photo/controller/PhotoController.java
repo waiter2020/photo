@@ -71,6 +71,7 @@ public class PhotoController {
                           Authentication authentication) throws IOException, ImageProcessingException {
 
 
+
         //TODO: MD5校验
         UUID uuid = UUID.randomUUID();
         Photo photo = new Photo();
