@@ -18,11 +18,14 @@ import java.util.ArrayList;
 
 public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
 
+    ArrayList<Photo> findAllByAuthorAndAddressNotNull(String userName);
+
     Long countAllByAuthorAndAddress_City(String userName,String cityName);
-    Photo findTopByAuthorAndAddress_City(String cityName);
+    Photo findTopByAuthorAndAddress_City(String userName,String cityName);
 
     ArrayList<Photo> findAllByAuthor(String author);
     ArrayList<Photo> findAllByAlbum(Album album);
     Page<Photo> findAllByAuthorOrderByCreateDesc(String author, Pageable pageable);
     Page<Photo> findAllByAlbumOrderByCreateDesc(Album album, Pageable pageable);
+    Page<Photo> findAllByAuthorAndAddress_CityOrderByCreateDesc(String author,String cityName, Pageable pageable);
 }

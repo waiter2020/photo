@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 /**
@@ -24,7 +27,11 @@ import java.util.concurrent.Future;
 
 public interface PhotoService {
 
+    Photo findOneByCity(String userName,String cityName);
 
+    Long countByCity(String userName,String cityName);
+
+    Map<String,Long> getCityList(String userName);
 
     void delete(Photo photo);
 
@@ -49,4 +56,7 @@ public interface PhotoService {
 
     Page<Photo> findAll(String userName, Pageable pageable);
     Page<Photo> getAlbumPhoto(Album album,Pageable pageable);
+
+    Page<Photo> getByCity(String userName,String cityName,Pageable pageable);
+
 }

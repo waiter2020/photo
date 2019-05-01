@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upc.photo.model.Address;
-import com.upc.photo.model.PhotoType;
+
 import lombok.Data;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -41,7 +41,7 @@ import java.util.List;
 
 public class GetPhotoType {
 
-    public static PhotoType getPhotoType(byte[] bytes) {
+    public static String getPhotoType(byte[] bytes) {
         String url = "http://101.132.132.225:8501/v1/models/classifier:predict";
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encode = encoder.encode(bytes);
@@ -80,19 +80,19 @@ public class GetPhotoType {
             }
         }
 
-        return result==null?PhotoType.DEFAULT:getResult(result);
+        return result==null?"DEFAULT":getResult(result);
     }
 
 
-    private static PhotoType getResult(Result result){
+    private static String getResult(Result result){
         Double[][] predictions = result.getPredictions();
         if(predictions[0][0]<0.7&&predictions[0][1]<0.7){
-            return PhotoType.DEFAULT;
+            return "DEFAULT";
         }
         if (predictions[0][0]>predictions[0][1]){
-            return PhotoType.CAT;
+            return "CAT";
         }else {
-            return PhotoType.DOG;
+            return "DOG";
         }
 
     }

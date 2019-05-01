@@ -10,7 +10,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.upc.photo.dao.PhotoDao;
 import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
-import com.upc.photo.model.PhotoType;
+
 import com.upc.photo.model.RestPage;
 import com.upc.photo.service.PhotoService;
 import com.upc.photo.utils.GetAddressByBaidu;
@@ -33,10 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +57,30 @@ public class PhotoServiceImpl implements PhotoService {
         this.gridFsTemplate = gridFsTemplate;
     }
 
+
+    @Override
+    public Photo findOneByCity(String userName,String cityName) {
+        return photoDao.findTopByAuthorAndAddress_City(userName,cityName);
+    }
+
+    @Override
+    public Long countByCity(String userName, String cityName) {
+        return photoDao.countAllByAuthorAndAddress_City(userName,cityName);
+    }
+
+    @Override
+    public Map<String,Long> getCityList(String userName) {
+        ArrayList<Photo> all = photoDao.findAllByAuthorAndAddressNotNull(userName);
+        HashSet<String> citys = new HashSet<>();
+        all.forEach(e-> citys.add(e.getAddress().getCity()));
+        Iterator<String> iterator = citys.iterator();
+        HashMap<String,Long> map = new HashMap<>();
+        while (iterator.hasNext()){
+            String next = iterator.next();
+            map.put(next,countByCity(userName,next));
+        }
+        return map;
+    }
 
     @Caching(evict = {
             @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#photo.album+'-*'", allEntries = true),
@@ -171,6 +192,11 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public Page<Photo> getAlbumPhoto(Album album,Pageable pageable) {
         return new RestPage<>(photoDao.findAllByAlbumOrderByCreateDesc(album,pageable));
+    }
+
+    @Override
+    public Page<Photo> getByCity(String userName, String cityName, Pageable pageable) {
+        return photoDao.findAllByAuthorAndAddress_CityOrderByCreateDesc(userName,cityName,pageable);
     }
 
 

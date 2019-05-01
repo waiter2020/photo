@@ -1,5 +1,6 @@
 package com.upc.photo.service;
 
+import com.upc.photo.model.Photo;
 import com.upc.photo.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 
 public interface UserService extends UserDetailsService {
+
+
     void deleteUserLoginInfo(String username);
 
     /**

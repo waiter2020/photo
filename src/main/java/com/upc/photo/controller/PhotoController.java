@@ -5,7 +5,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 
-import com.upc.photo.model.PhotoType;
+
 import com.upc.photo.service.PhotoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -202,6 +203,53 @@ public class PhotoController {
         return photoService.getAlbumPhoto(album,PageRequest.of(page,pageSize));
     }
 
+    /**
+     *
+     * @param authentication
+     * @return 键是城市名，值是数量
+     */
+    @ApiOperation("获取用户照片城市")
+    @GetMapping("/get_city_list")
+    public Map<String,Long> getCityList(Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getCityList(username);
+    }
+
+    /**
+     * 用于地图标点显示
+     * @param cityName
+     * @param authentication
+     * @return
+     */
+    @ApiOperation("根据城市获取一张图片")
+    @GetMapping("/get_photo_by_city")
+    public Photo getOneByCityName(@RequestParam("cityName") String cityName,
+                                  Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.findOneByCity(username,cityName);
+    }
+
+    /**
+     * 获取某一城市所有照片
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "获取某一城市所有照片",notes = "担心中文路径乱码，所以城市名放到后面参数里")
+    @GetMapping({"/get_city_photos","/get_city_photos/{page}","/get_city_photos/{page}/{pageSize}"})
+    public Page<Photo> getCityPhotos(      @RequestParam("cityName") String cityName,
+                                           @PathVariable(value = "page",required = false)Integer page,
+                                           @PathVariable(value = "pageSize",required = false)Integer pageSize,
+                                           Authentication authentication){
+
+        if (page==null){
+            page=0;
+        }
+        if (pageSize==null){
+            pageSize=20;
+        }
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getByCity(username,cityName,PageRequest.of(page,pageSize));
+    }
 
     private ResponseEntity<InputStreamResource> getPhotoFile(@NotNull String fileName,String name) throws IOException {
 

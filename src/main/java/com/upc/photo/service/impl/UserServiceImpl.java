@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.upc.photo.dao.UserDao;
+import com.upc.photo.model.Photo;
 import com.upc.photo.model.User;
 import com.upc.photo.service.UserService;
 import org.springframework.cache.Cache;
@@ -120,6 +121,8 @@ public class UserServiceImpl implements  UserService {
         removeCache("user:"+user.getUsername());
         return userDao.save(user);
     }
+
+
 
     @Override
     public void deleteUserLoginInfo(String username) {

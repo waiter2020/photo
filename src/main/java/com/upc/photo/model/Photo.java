@@ -60,7 +60,7 @@ public class Photo implements Serializable{
     @DBRef
     private Album album;
 
-    private PhotoType type;
+    private String type;
 
     private Location location;
     private Address address;
