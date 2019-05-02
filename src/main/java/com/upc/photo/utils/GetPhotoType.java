@@ -41,6 +41,11 @@ import java.util.List;
 
 public class GetPhotoType {
 
+    private static final String[] types = {"AEROPLANE", "BICYCLE", "BIRD", "BOAT",
+            "BOTTLE", "BUS", "CAR", "CAT", "CHAIR", "COW", "DININGTABLE", "DOG",
+            "HORSE", "MOTORBIKE", "PERSON", "POTTEDPLANT", "SHEEP", "SOFA", "TRAIN", "TVMONITOR"};
+
+
     public static String getPhotoType(byte[] bytes) {
         String url = "http://101.132.132.225:8501/v1/models/classifier:predict";
         Base64.Encoder encoder = Base64.getEncoder();
@@ -86,14 +91,21 @@ public class GetPhotoType {
 
     private static String getResult(Result result){
         Double[][] predictions = result.getPredictions();
-        if(predictions[0][0]<0.7&&predictions[0][1]<0.7){
+        Double[] doubles = predictions[0];
+        int i=0,j=0;
+        double n = 0;
+        for (Double d:doubles){
+            if (d>n){
+                n=d;
+                j=i;
+            }
+            i++;
+        }
+        if (n<0.7){
             return "DEFAULT";
         }
-        if (predictions[0][0]>predictions[0][1]){
-            return "CAT";
-        }else {
-            return "DOG";
-        }
+
+        return types[j];
 
     }
 
