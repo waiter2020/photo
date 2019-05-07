@@ -203,6 +203,60 @@ public class PhotoController {
         return photoService.getAlbumPhoto(album,PageRequest.of(page,pageSize));
     }
 
+
+    /**
+     *
+     * @param authentication
+     * @return 键是类别，值是数量
+     */
+    @ApiOperation("获取用户照片类别")
+    @GetMapping("/get_type_list")
+    public Map<String,Long> getTypeList(Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getTypeList(username);
+    }
+
+
+    /**
+     * 用于分类显示
+     * @param typeName
+     * @param authentication
+     * @return
+     */
+    @ApiOperation("根据类别获取一张图片")
+    @GetMapping("/get_photo_by_type")
+    public Photo getOneByTypeName(@RequestParam("typeName") String typeName,
+                                  Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.findOneByType(username,typeName);
+    }
+
+
+    /**
+     * 获取某一类别所有照片
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "获取某一城市所有照片",notes = "担心中文路径乱码，所以城市名放到后面参数里")
+    @GetMapping({"/get_type_photos","/get_type_photos/{page}","/get_type_photos/{page}/{pageSize}"})
+    public Page<Photo> getTypePhotos(      @RequestParam("typeName") String typeName,
+                                           @PathVariable(value = "page",required = false)Integer page,
+                                           @PathVariable(value = "pageSize",required = false)Integer pageSize,
+                                           Authentication authentication){
+
+        if (page==null){
+            page=0;
+        }
+
+        if (pageSize==null){
+            pageSize=30;
+        }
+
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getByType(username,typeName,PageRequest.of(page,pageSize));
+    }
+
+
     /**
      *
      * @param authentication
@@ -214,6 +268,8 @@ public class PhotoController {
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         return photoService.getCityList(username);
     }
+
+
 
     /**
      * 用于地图标点显示

@@ -21,11 +21,17 @@ public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
     ArrayList<Photo> findAllByAuthorAndAddressNotNull(String userName);
 
     Long countAllByAuthorAndAddress_City(String userName,String cityName);
+
+    Long countAllByAuthorAndType(String userName,String type);
+
     Photo findTopByAuthorAndAddress_City(String userName,String cityName);
+
+    Photo findTopByAuthorAndType(String userName,String type);
 
     ArrayList<Photo> findAllByAuthor(String author);
     ArrayList<Photo> findAllByAlbum(Album album);
     Page<Photo> findAllByAuthorOrderByCreateDesc(String author, Pageable pageable);
     Page<Photo> findAllByAlbumOrderByCreateDesc(Album album, Pageable pageable);
     Page<Photo> findAllByAuthorAndAddress_CityOrderByCreateDesc(String author,String cityName, Pageable pageable);
+    Page<Photo> findAllByAuthorAndTypeOrderByCreateDesc(String author,String type, Pageable pageable);
 }

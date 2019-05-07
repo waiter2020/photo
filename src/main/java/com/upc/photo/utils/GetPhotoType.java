@@ -115,7 +115,8 @@ public class GetPhotoType {
         Double[][] predictions;
     }
 
-
-
+    public static String[] getTypes() {
+        return types;
+    }
 }
 

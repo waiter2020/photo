@@ -64,6 +64,12 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
+    public Photo findOneByType(String userName, String type) {
+
+        return photoDao.findTopByAuthorAndType(userName,type);
+    }
+
+    @Override
     public Long countByCity(String userName, String cityName) {
         return photoDao.countAllByAuthorAndAddress_City(userName,cityName);
     }
@@ -80,6 +86,18 @@ public class PhotoServiceImpl implements PhotoService {
             map.put(next,countByCity(userName,next));
         }
         return map;
+    }
+
+    @Override
+    public Map<String, Long> getTypeList(String userName) {
+        String[] types = GetPhotoType.getTypes();
+        HashMap<String, Long> stringLongHashMap = new HashMap<>();
+        for (String s:types){
+            Long aLong = photoDao.countAllByAuthorAndType(userName, s);
+            stringLongHashMap.put(s,aLong);
+        }
+
+        return stringLongHashMap;
     }
 
     @Caching(evict = {
@@ -140,8 +158,9 @@ public class PhotoServiceImpl implements PhotoService {
             ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), photo.getThumbnailName());
 
             photo.setAddress(GetAddressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
-            //TODO:调用py接口获取照片类别
+            //调用py接口获取照片类别
             photo.setType(GetPhotoType.getPhotoType(bytes));
+            //TODO:判断是不是人，执行下一步操作
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -197,6 +216,11 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public Page<Photo> getByCity(String userName, String cityName, Pageable pageable) {
         return photoDao.findAllByAuthorAndAddress_CityOrderByCreateDesc(userName,cityName,pageable);
+    }
+
+    @Override
+    public Page<Photo> getByType(String userName, String type, Pageable pageable) {
+        return photoDao.findAllByAuthorAndTypeOrderByCreateDesc(userName,type,pageable);
     }
 
 

@@ -29,9 +29,12 @@ public interface PhotoService {
 
     Photo findOneByCity(String userName,String cityName);
 
+    Photo findOneByType(String userName,String type);
+
     Long countByCity(String userName,String cityName);
 
     Map<String,Long> getCityList(String userName);
+    Map<String,Long> getTypeList(String userName);
 
     void delete(Photo photo);
 
@@ -58,5 +61,7 @@ public interface PhotoService {
     Page<Photo> getAlbumPhoto(Album album,Pageable pageable);
 
     Page<Photo> getByCity(String userName,String cityName,Pageable pageable);
+
+    Page<Photo> getByType(String userName,String type,Pageable pageable);
 
 }
