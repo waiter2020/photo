@@ -237,7 +237,7 @@ public class PhotoController {
      * @param
      * @return
      */
-    @ApiOperation(value = "获取某一城市所有照片",notes = "担心中文路径乱码，所以城市名放到后面参数里")
+    @ApiOperation(value = "获取某一类别所有照片")
     @GetMapping({"/get_type_photos","/get_type_photos/{page}","/get_type_photos/{page}/{pageSize}"})
     public Page<Photo> getTypePhotos(      @RequestParam("typeName") String typeName,
                                            @PathVariable(value = "page",required = false)Integer page,
