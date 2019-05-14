@@ -182,6 +182,54 @@ public class PhotoController {
         return photoService.findAll(username,PageRequest.of(page,pageSize));
     }
 
+
+
+    /**
+     * 获取当前用户隐私空间所有照片
+     * @param authentication
+     * @return
+     */
+    @PreAuthorize("#securityToken==authentication.principal.securityToken or hasAuthority('ADMIN')")
+    @ApiOperation("获取用户隐私空间所有照片")
+    @GetMapping({"/get_security/{page}/{pageSize}","/get_security","/get_security/{page}"})
+    public Page<Photo> getSecurityPhoto(Authentication authentication,
+                                   @RequestParam("securityToken") String securityToken,
+                                   @PathVariable(value = "page",required = false)Integer page,
+                                   @PathVariable(value = "pageSize",required = false)Integer pageSize ){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (page==null){
+            page=0;
+        }
+        if (pageSize==null){
+            pageSize=20;
+        }
+
+        return photoService.findAll("security"+username,PageRequest.of(page,pageSize));
+    }
+
+    @PreAuthorize("#securityToken==authentication.principal.securityToken or hasAuthority('ADMIN')")
+    @ApiOperation("将照片移至隐私空间")
+    @PostMapping("/change_to_security")
+    public Photo changeToSecurity(Authentication authentication,
+                                        @RequestParam("securityToken") String securityToken,
+                                        @RequestParam("photoId")Photo photo){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        photo.setAuthor("security"+photo.getAuthor());
+        return photoService.save(photo);
+    }
+
+
+    @PreAuthorize("#securityToken==authentication.principal.securityToken or hasAuthority('ADMIN')")
+    @ApiOperation("将照片移出隐私空间")
+    @PostMapping("/change_out_security")
+    public Photo changeOutSecurity(Authentication authentication,
+                                  @RequestParam("securityToken") String securityToken,
+                                  @RequestParam("photoId")Photo photo){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        photo.setAuthor(username);
+        return photoService.save(photo);
+    }
+
     /**
      * 获取某一相册所有照片
      * @param album
@@ -202,6 +250,11 @@ public class PhotoController {
         }
         return photoService.getAlbumPhoto(album,PageRequest.of(page,pageSize));
     }
+
+
+
+
+
 
 
     /**
@@ -307,6 +360,8 @@ public class PhotoController {
         return photoService.getByCity(username,cityName,PageRequest.of(page,pageSize));
     }
 
+
+
     private ResponseEntity<InputStreamResource> getPhotoFile(@NotNull String fileName,String name) throws IOException {
 
         GridFsResource gridFsResource = photoService.getPhotoResource(fileName);
@@ -324,4 +379,6 @@ public class PhotoController {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new InputStreamResource(gridFsResource.getInputStream()));
     }
+
+
 }

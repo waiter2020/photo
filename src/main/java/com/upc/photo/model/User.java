@@ -40,6 +40,12 @@ public class User implements UserDetails , Serializable {
     @JsonIgnore
     private String password;
 
+    @JsonIgnore
+    private String securityPassword;
+
+    @JsonIgnore
+    private String securityToken;
+
     private String email;
 
 
