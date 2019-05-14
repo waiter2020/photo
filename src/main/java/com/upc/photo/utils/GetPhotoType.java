@@ -1,36 +1,21 @@
 package com.upc.photo.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upc.photo.model.Address;
 
 import lombok.Data;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,7 +31,7 @@ public class GetPhotoType {
             "HORSE", "MOTORBIKE", "PERSON", "POTTEDPLANT", "SHEEP", "SOFA", "TRAIN", "TVMONITOR"};
 
 
-    public static String getPhotoType(byte[] bytes) {
+    public static List<String> getPhotoType(byte[] bytes) {
         String url = "http://101.132.132.225:8501/v1/models/classifier:predict";
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encode = encoder.encode(bytes);
@@ -85,27 +70,23 @@ public class GetPhotoType {
             }
         }
 
-        return result==null?"DEFAULT":getResult(result);
+        return result==null? Collections.singletonList("DEFAULT") :getResult(result);
     }
 
 
-    private static String getResult(Result result){
+    private static List<String> getResult(Result result){
         Double[][] predictions = result.getPredictions();
         Double[] doubles = predictions[0];
-        int i=0,j=0;
-        double n = 0;
+        ArrayList<String> type = new ArrayList<>();
+        int i=0;
+
         for (Double d:doubles){
-            if (d>n){
-                n=d;
-                j=i;
+            if (d>0.45){
+              type.add(types[i]);
             }
             i++;
         }
-        if (n<0.7){
-            return "DEFAULT";
-        }
-
-        return types[j];
+        return type;
 
     }
 

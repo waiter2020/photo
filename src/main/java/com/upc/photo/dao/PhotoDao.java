@@ -33,5 +33,5 @@ public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
     Page<Photo> findAllByAuthorOrderByCreateAsc(String author, Pageable pageable);
     Page<Photo> findAllByAlbumOrderByCreateAsc(Album album, Pageable pageable);
     Page<Photo> findAllByAuthorAndAddress_CityOrderByCreateAsc(String author,String cityName, Pageable pageable);
-    Page<Photo> findAllByAuthorAndTypeOrderByCreateAsc(String author,String type, Pageable pageable);
+    Page<Photo> findAllByAuthorAndTypeContainingOrderByCreateAsc(String author,String type, Pageable pageable);
 }

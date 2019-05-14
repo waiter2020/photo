@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -60,7 +61,7 @@ public class Photo implements Serializable{
     @DBRef
     private Album album;
 
-    private String type;
+    private List<String> type;
 
     private Location location;
     private Address address;

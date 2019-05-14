@@ -220,7 +220,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Page<Photo> getByType(String userName, String type, Pageable pageable) {
-        return photoDao.findAllByAuthorAndTypeOrderByCreateAsc(userName,type,pageable);
+        return photoDao.findAllByAuthorAndTypeContainingOrderByCreateAsc(userName,type,pageable);
     }
 
 
