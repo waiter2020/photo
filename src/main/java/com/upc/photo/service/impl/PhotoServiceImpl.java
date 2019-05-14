@@ -198,7 +198,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Cacheable(cacheNames = "photos")
     @Override
     public Page<Photo> findAll(String userName, Pageable pageable) {
-        return new RestPage<>(photoDao.findAllByAuthorOrderByCreateDesc(userName, pageable));
+        return new RestPage<>(photoDao.findAllByAuthorOrderByUploadDesc(userName, pageable));
     }
 
     @Cacheable(cacheNames = "photos")
@@ -210,17 +210,17 @@ public class PhotoServiceImpl implements PhotoService {
     @Cacheable(cacheNames = "photos")
     @Override
     public Page<Photo> getAlbumPhoto(Album album,Pageable pageable) {
-        return new RestPage<>(photoDao.findAllByAlbumOrderByCreateDesc(album,pageable));
+        return new RestPage<>(photoDao.findAllByAlbumOrderByUploadDesc(album,pageable));
     }
 
     @Override
     public Page<Photo> getByCity(String userName, String cityName, Pageable pageable) {
-        return photoDao.findAllByAuthorAndAddress_CityOrderByCreateDesc(userName,cityName,pageable);
+        return photoDao.findAllByAuthorAndAddress_CityOrderByUploadDesc(userName,cityName,pageable);
     }
 
     @Override
     public Page<Photo> getByType(String userName, String type, Pageable pageable) {
-        return photoDao.findAllByAuthorAndTypeContainingOrderByCreateDesc(userName,type,pageable);
+        return photoDao.findAllByAuthorAndTypeContainingOrderByUploadDesc(userName,type,pageable);
     }
 
 

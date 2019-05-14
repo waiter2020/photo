@@ -30,8 +30,8 @@ public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
 
     ArrayList<Photo> findAllByAuthor(String author);
     ArrayList<Photo> findAllByAlbum(Album album);
-    Page<Photo> findAllByAuthorOrderByCreateDesc(String author, Pageable pageable);
-    Page<Photo> findAllByAlbumOrderByCreateDesc(Album album, Pageable pageable);
-    Page<Photo> findAllByAuthorAndAddress_CityOrderByCreateDesc(String author,String cityName, Pageable pageable);
-    Page<Photo> findAllByAuthorAndTypeContainingOrderByCreateDesc(String author,String type, Pageable pageable);
+    Page<Photo> findAllByAuthorOrderByUploadDesc(String author, Pageable pageable);
+    Page<Photo> findAllByAlbumOrderByUploadDesc(Album album, Pageable pageable);
+    Page<Photo> findAllByAuthorAndAddress_CityOrderByUploadDesc(String author,String cityName, Pageable pageable);
+    Page<Photo> findAllByAuthorAndTypeContainingOrderByUploadDesc(String author,String type, Pageable pageable);
 }
