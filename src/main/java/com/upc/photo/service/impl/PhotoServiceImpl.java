@@ -66,7 +66,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public Photo findOneByType(String userName, String type) {
 
-        return photoDao.findTopByAuthorAndType(userName,type);
+        return photoDao.findTopByAuthorAndTypeContaining(userName,type);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class PhotoServiceImpl implements PhotoService {
         String[] types = GetPhotoType.getTypes();
         HashMap<String, Long> stringLongHashMap = new HashMap<>();
         for (String s:types){
-            Long aLong = photoDao.countAllByAuthorAndType(userName, s);
+            Long aLong = photoDao.countAllByAuthorAndTypeContaining(userName, s);
             stringLongHashMap.put(s,aLong);
         }
 

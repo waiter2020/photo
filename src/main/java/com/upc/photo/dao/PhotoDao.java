@@ -22,11 +22,11 @@ public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
 
     Long countAllByAuthorAndAddress_City(String userName,String cityName);
 
-    Long countAllByAuthorAndType(String userName,String type);
+    Long countAllByAuthorAndTypeContaining(String userName,String type);
 
     Photo findTopByAuthorAndAddress_City(String userName,String cityName);
 
-    Photo findTopByAuthorAndType(String userName,String type);
+    Photo findTopByAuthorAndTypeContaining(String userName,String type);
 
     ArrayList<Photo> findAllByAuthor(String author);
     ArrayList<Photo> findAllByAlbum(Album album);
