@@ -215,6 +215,7 @@ public class PhotoController {
                                         @RequestParam("photoId")Photo photo){
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         photo.setAuthor("security"+photo.getAuthor());
+        photo.setAlbum(null);
         return photoService.save(photo);
     }
 
