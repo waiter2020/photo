@@ -84,6 +84,7 @@ public class GetPhotoType {
             if (d>0.45){
               type.add(types[i]);
             }
+            System.out.println(d);
             i++;
         }
         return type;
