@@ -91,13 +91,14 @@ public class GetPhotoType {
     }
 
 
-    @Data
-    static class Result{
-        Double[][] predictions;
-    }
+
 
     public static String[] getTypes() {
         return types;
     }
 }
 
+@Data
+class Result{
+    private Double[][] predictions;
+}

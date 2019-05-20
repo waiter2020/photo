@@ -179,11 +179,11 @@ public class PhotoServiceImpl implements PhotoService {
            * @return
            */
      private static String pointToLatlong(String point) {
-                 Double du = Double.parseDouble(point.substring(0, point.indexOf("°")).trim());
-                 Double fen = Double.parseDouble(point.substring(point.indexOf("°")+1, point.indexOf("'")).trim());
-                 Double miao = Double.parseDouble(point.substring(point.indexOf("'")+1, point.indexOf("\"")).trim());
-                 Double duStr = du + fen / 60 + miao / 60 / 60 ;
-                 return duStr.toString();
+                 double du = Double.parseDouble(point.substring(0, point.indexOf("°")).trim());
+                 double fen = Double.parseDouble(point.substring(point.indexOf("°")+1, point.indexOf("'")).trim());
+                 double miao = Double.parseDouble(point.substring(point.indexOf("'")+1, point.indexOf("\"")).trim());
+                 double duStr = du + fen / 60 + miao / 60 / 60 ;
+                 return Double.toString(duStr);
      }
 
 
@@ -226,7 +226,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Photo findById(BigInteger id) {
-        Optional<Photo> byId = photoDao.findById(id);
+
 
         return photoDao.findById(id).get();
     }

@@ -364,7 +364,7 @@ public class PhotoController {
 
 
 
-    private ResponseEntity<InputStreamResource> getPhotoFile(@NotNull String fileName,String name) throws IOException {
+    public ResponseEntity<InputStreamResource> getPhotoFile(@NotNull String fileName,String name) throws IOException {
 
         GridFsResource gridFsResource = photoService.getPhotoResource(fileName);
 
