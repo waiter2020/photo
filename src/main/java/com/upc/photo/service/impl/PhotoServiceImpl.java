@@ -245,6 +245,6 @@ public class PhotoServiceImpl implements PhotoService {
     @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#result.album+'-*'", allEntries = true)
     @Override
     public Photo changeToAlbum(Photo photo) {
-        return photo;
+        return photoDao.save(photo);
     }
 }

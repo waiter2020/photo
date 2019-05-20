@@ -3,7 +3,12 @@ spring:
     url: jdbc:mysql://59.110.163.243:3306/photo?useSSL=false
     username: waiter
     password: 690818
-
+    hikari:
+      idle-timeout: 60000
+      connection-timeout: 60000
+      validation-timeout: 3000
+      login-timeout: 5
+      max-lifetime: 60000
   jpa:
     show-sql: true
     hibernate:

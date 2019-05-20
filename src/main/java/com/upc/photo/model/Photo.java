@@ -66,6 +66,7 @@ public class Photo implements Serializable{
     private Location location;
     private Address address;
     private Date create;
+    private Long size;
     @CreatedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date upload;
