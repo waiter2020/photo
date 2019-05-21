@@ -1,5 +1,6 @@
 package com.upc.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -31,6 +32,12 @@ public class Share implements Serializable {
      * 分享的相册或照片的id列表
      */
     private List<BigInteger> shareList;
+
+    /**
+     * 加密分享的密码
+     */
+    @JsonIgnore
+    private String password;
 
     /**
      * 分享有效期-1为永久

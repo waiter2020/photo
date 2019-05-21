@@ -14,10 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,11 +38,13 @@ public class ShareController {
     private final ShareService shareService;
     private final PhotoService photoService;
     private final PhotoController photoController;
+    private final PasswordEncoder passwordEncoder;
 
     public ShareController(ShareService shareService, PhotoService photoService, PhotoController photoController) {
         this.shareService = shareService;
         this.photoService = photoService;
         this.photoController = photoController;
+        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @PreAuthorize("hasAnyRole('USER')")
@@ -46,15 +53,34 @@ public class ShareController {
     public Share addShare(Share share, Authentication authentication){
         Assert.notNull(share.getExpiration(),"过期时间不能为空");
         Assert.notNull(share.getShareList(),"分享列表不为空");
+        if (!StringUtils.isEmpty(share.getPassword())){
+            share.setPassword(passwordEncoder.encode(share.getPassword()));
+        }
         share.setId(UUID.randomUUID().toString());
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         share.setAuthor(username);
         return shareService.add(share);
     }
 
-    @ApiOperation("获取分享信息")
-    @GetMapping("/get/{id}")
-    public Share getShare(@PathVariable("id") Share share){
+    @ApiOperation(value = "获取分享信息",notes = "密码采用Base64位加密，在前端加密后再提交后端解密")
+    @GetMapping({"/get/{id}/{password}","/get/{id}"})
+    public Share getShare(@PathVariable("id") Share share,
+                          @PathVariable(required = false) String password){
+        if (StringUtils.isEmpty(share.getPassword())){
+            return share;
+        }
+        if (StringUtils.isEmpty(password)){
+            return null;
+        }
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decode = decoder.decode(password);
+        String s = new String(decode);
+
+        if (!passwordEncoder.matches(s,share.getPassword())){
+            return null;
+        }
+
         return share;
     }
 
@@ -116,6 +142,13 @@ public class ShareController {
     public ResponseEntity<InputStreamResource> getThumbnailPhoto(@PathVariable("id") Photo photo) throws IOException {
 
         return photoController.getPhotoFile(photo.getThumbnailName(),photo.getName());
+    }
+
+
+    @ApiOperation(value = "判断分享是否有密码",notes = "获取分享信息时调用此接口判断，若有密码返回true，让用户输入密码，再访问获取分享信息接口")
+    @GetMapping("/is_private/{id}")
+    public Boolean isPrivate(@PathVariable("id") Share share){
+        return !StringUtils.isEmpty(share.getPassword());
     }
 
 
