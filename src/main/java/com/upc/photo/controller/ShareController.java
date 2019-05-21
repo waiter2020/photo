@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -51,11 +52,15 @@ public class ShareController {
     @ApiOperation(value = "添加分享",notes = "除了id和author之外其它字段都需要填上,type=0是相册分享，1是照片分享")
     @PostMapping("/add")
     public Share addShare(Share share, Authentication authentication){
-        Assert.notNull(share.getExpiration(),"过期时间不能为空");
         Assert.notNull(share.getShareList(),"分享列表不为空");
         if (!StringUtils.isEmpty(share.getPassword())){
             share.setPassword(passwordEncoder.encode(share.getPassword()));
         }
+
+        if (share.getExpiration() == null||share.getExpiration()<1) {
+            share.setExpiration((long) (24 * 60 * 60));
+        }
+
         share.setId(UUID.randomUUID().toString());
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         share.setAuthor(username);
