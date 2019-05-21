@@ -110,6 +110,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return daoProvider;
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {

@@ -4,26 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.upc.photo.dao.UserDao;
-import com.upc.photo.model.Photo;
 import com.upc.photo.model.User;
 import com.upc.photo.service.UserService;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -36,15 +28,14 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl implements  UserService {
 
     private final RedisTemplate redisTemplate;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserDao userDao;
 
     @SuppressWarnings("SpringJavaAutowiringInspection")
-    public UserServiceImpl(RedisTemplate redisTemplate, UserDao userDao) {
+    public UserServiceImpl(RedisTemplate redisTemplate, PasswordEncoder passwordEncoder, UserDao userDao) {
         this.redisTemplate = redisTemplate;
+        this.passwordEncoder = passwordEncoder;
         this.userDao = userDao;
-        //默认使用 bcrypt， strength=10
-        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
 

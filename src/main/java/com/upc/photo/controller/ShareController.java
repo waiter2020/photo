@@ -14,15 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -41,11 +38,11 @@ public class ShareController {
     private final PhotoController photoController;
     private final PasswordEncoder passwordEncoder;
 
-    public ShareController(ShareService shareService, PhotoService photoService, PhotoController photoController) {
+    public ShareController(ShareService shareService, PhotoService photoService, PhotoController photoController, PasswordEncoder passwordEncoder) {
         this.shareService = shareService;
         this.photoService = photoService;
         this.photoController = photoController;
-        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PreAuthorize("hasAnyRole('USER')")
