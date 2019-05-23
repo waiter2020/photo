@@ -155,7 +155,8 @@ public class PhotoServiceImpl implements PhotoService {
             Thumbnails.of(new ByteArrayInputStream(bytes))
                     .size(400,200)
                     .toOutputStream(byteArrayOutputStream);
-            ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), photo.getThumbnailName());
+            bytes = byteArrayOutputStream.toByteArray();
+            ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(bytes), photo.getThumbnailName());
             photo = save(photo);
             photo.setAddress(GetAddressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
             //调用py接口获取照片类别
