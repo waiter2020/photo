@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -71,6 +72,14 @@ public class UserController {
         return null;
     }
 
+    @ApiOperation("判断是否设置了隐私空间密码")
+    @PostMapping("/is_no_security_password")
+    public Boolean isNoSecurityPassword( Authentication authentication){
+        User user = (User) userService.loadUserByUsername(((User) authentication.getPrincipal()).getUsername());
+
+        return StringUtils.isEmpty(user.getSecurityPassword());
+
+    }
 
     @ApiOperation("修改隐私空间密码")
     @PostMapping("/change_security_password")
