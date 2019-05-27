@@ -324,7 +324,57 @@ public class PhotoController {
         return photoService.getCityList(username);
     }
 
+    /**
+     *
+     * @param authentication
+     * @return 键是城市名，值是数量
+     */
+    @ApiOperation("获取用户照片省份")
+    @GetMapping("/get_province_list")
+    public Map<String,Long> getProvince(Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getProvinceList(username);
+    }
 
+    /**
+     *
+     * @param authentication
+     * @return 键是城市名，值是数量
+     */
+    @ApiOperation("获取用户照片区域")
+    @GetMapping("/get_district_list")
+    public Map<String,Long> getDistrict(Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getDistrictList(username);
+    }
+
+    /**
+     * 用于地图标点显示
+     * @param district
+     * @param authentication
+     * @return
+     */
+    @ApiOperation("根据地区获取一张图片")
+    @GetMapping("/get_photo_by_district")
+    public Photo getOneByDistrict(@RequestParam("district") String district,
+                                  Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.findOneByDistrict(username,district);
+    }
+
+    /**
+     * 用于地图标点显示
+     * @param province
+     * @param authentication
+     * @return
+     */
+    @ApiOperation("根据省份获取一张图片")
+    @GetMapping("/get_photo_by_province")
+    public Photo getOneByProvince(@RequestParam("province") String province,
+                                  Authentication authentication){
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.findOneByProvince(username,province);
+    }
 
     /**
      * 用于地图标点显示
@@ -338,6 +388,51 @@ public class PhotoController {
                                   Authentication authentication){
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         return photoService.findOneByCity(username,cityName);
+    }
+
+
+    /**
+     * 获取某一城市所有照片
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "获取某一地区所有照片",notes = "担心中文路径乱码，所以城市名放到后面参数里")
+    @GetMapping({"/get_district_photos","/get_district_photos/{page}","/get_district_photos/{page}/{pageSize}"})
+    public Page<Photo> getDistrictPhotos(      @RequestParam("district") String district,
+                                               @PathVariable(value = "page",required = false)Integer page,
+                                               @PathVariable(value = "pageSize",required = false)Integer pageSize,
+                                               Authentication authentication){
+
+        if (page==null){
+            page=0;
+        }
+        if (pageSize==null){
+            pageSize=20;
+        }
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getByDistrict(username,district,PageRequest.of(page,pageSize));
+    }
+
+    /**
+     * 获取某一城市所有照片
+     * @param
+     * @return
+     */
+    @ApiOperation(value = "获取某一省份所有照片",notes = "担心中文路径乱码，所以城市名放到后面参数里")
+    @GetMapping({"/get_province_photos","/get_province_photos/{page}","/get_province_photos/{page}/{pageSize}"})
+    public Page<Photo> getProvincePhotos(      @RequestParam("province") String province,
+                                           @PathVariable(value = "page",required = false)Integer page,
+                                           @PathVariable(value = "pageSize",required = false)Integer pageSize,
+                                           Authentication authentication){
+
+        if (page==null){
+            page=0;
+        }
+        if (pageSize==null){
+            pageSize=20;
+        }
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return photoService.getByProvince(username,province,PageRequest.of(page,pageSize));
     }
 
     /**

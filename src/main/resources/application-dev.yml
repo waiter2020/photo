@@ -8,7 +8,7 @@ spring:
       connection-timeout: 60000
       validation-timeout: 3000
       login-timeout: 5
-      max-lifetime: 60000
+      max-lifetime: 1800000
   jpa:
     show-sql: true
     hibernate:

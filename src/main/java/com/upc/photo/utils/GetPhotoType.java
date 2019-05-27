@@ -9,6 +9,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.stereotype.Component;
 
 
 import java.io.*;
@@ -23,7 +24,7 @@ import java.util.List;
  * @Date: 2019/4/12 17:53
  * @Version 1.0
  */
-
+@Component
 public class GetPhotoType {
 
     private static final String[] types = {"AEROPLANE", "BICYCLE", "BIRD", "BOAT",
@@ -31,50 +32,15 @@ public class GetPhotoType {
             "HORSE", "MOTORBIKE", "PERSON", "POTTEDPLANT", "SHEEP", "SOFA", "TRAIN", "TVMONITOR"};
 
 
-    public static List<String> getPhotoType(byte[] bytes) {
+    public  List<String> getPhotoType(byte[] bytes) {
         String url = "http://101.132.132.225:8501/v1/models/classifier:predict";
-        Base64.Encoder encoder = Base64.getEncoder();
-        byte[] encode = encoder.encode(bytes);
-
-        Result result=null;
-        // 创建Httpclient对象
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpResponse response = null;
-        String resultString = "";
-        try {
-            // 创建Http Post请求
-            HttpPost httpPost = new HttpPost(url);
-
-            httpPost.setHeader("Content-type", "application/json; charset=utf-8");
-            httpPost.setHeader("Connection", "Close");
-            String s = new String(encode);
-
-            StringEntity stringEntity = new StringEntity(String.format("{ \"instances\" : [{ \"b64\": \"%s\" }]}",s), Charset.forName("utf-8"));
-
-
-            httpPost.setEntity(stringEntity);
-
-            // 执行http请求
-            response = httpClient.execute(httpPost);
-            resultString = EntityUtils.toString(response.getEntity(), "utf-8");
-            result = JSON.parseObject(resultString, Result.class);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
+        String resultString = RequestUtils.get(url,bytes,"{ \"instances\" : [{ \"b64\": \"%s\" }]}");
+        Result result = JSON.parseObject(resultString, Result.class);
         return result==null? Collections.singletonList("DEFAULT") :getResult(result);
     }
 
 
-    private static List<String> getResult(Result result){
+    private  List<String> getResult(Result result){
         Double[][] predictions = result.getPredictions();
         Double[] doubles = predictions[0];
         ArrayList<String> type = new ArrayList<>();
@@ -91,9 +57,7 @@ public class GetPhotoType {
     }
 
 
-
-
-    public static String[] getTypes() {
+    public  String[] getTypes() {
         return types;
     }
 }

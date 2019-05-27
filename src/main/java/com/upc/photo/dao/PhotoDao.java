@@ -4,6 +4,7 @@ import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -24,7 +25,15 @@ public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
 
     Long countAllByAuthorAndTypeContaining(String userName,String type);
 
+    Page<Photo> findAllByAuthorAndAddress_DistrictOrderByUploadDesc(String username, String district, PageRequest of);
+
+    Page<Photo> findAllByAuthorAndAddress_ProvinceOrderByUploadDesc(String username, String province, PageRequest of);
+
     Photo findTopByAuthorAndAddress_City(String userName,String cityName);
+
+    Photo findTopByAuthorAndAddress_District(String username, String district);
+
+    Photo findTopByAuthorAndAddress_Province(String username, String province);
 
     Photo findTopByAuthorAndTypeContaining(String userName,String type);
 

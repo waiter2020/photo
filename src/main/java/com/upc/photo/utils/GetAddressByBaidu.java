@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upc.photo.model.Address;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -16,10 +17,10 @@ import java.nio.charset.StandardCharsets;
  * @Date: 2019/4/12 17:53
  * @Version 1.0
  */
-
+@Component
 public class GetAddressByBaidu {
 
-    public static Address getAddress(String latitude, String longitude) {
+    public Address getAddress(String latitude, String longitude) {
         Address address=null;
         String key = "ufySmrMjKzItyY0cQ7CUFKGouuryXQLB";
         String url = String.format("http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&location=%s,%s&output=json&pois=1&latest_admin=1&ak=%s", latitude, longitude, key);

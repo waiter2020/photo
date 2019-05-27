@@ -1,7 +1,6 @@
 package com.upc.photo.service.impl;
 
 import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
@@ -17,7 +16,6 @@ import com.upc.photo.utils.GetAddressByBaidu;
 import com.upc.photo.utils.GetPhotoType;
 import net.coobird.thumbnailator.Thumbnails;
 import org.bson.types.ObjectId;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -27,17 +25,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
@@ -51,16 +43,30 @@ import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilena
 public class PhotoServiceImpl implements PhotoService {
     private final PhotoDao photoDao;
     private final GridFsTemplate gridFsTemplate;
+    private final GetPhotoType getPhotoType;
+    private final GetAddressByBaidu addressByBaidu;
 
-    public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate) {
+    public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu) {
         this.photoDao = photoDao;
         this.gridFsTemplate = gridFsTemplate;
+        this.getPhotoType = getPhotoType;
+        this.addressByBaidu = addressByBaidu;
     }
 
 
     @Override
     public Photo findOneByCity(String userName,String cityName) {
         return photoDao.findTopByAuthorAndAddress_City(userName,cityName);
+    }
+
+    @Override
+    public Photo findOneByDistrict(String username, String district) {
+        return photoDao.findTopByAuthorAndAddress_District(username,district);
+    }
+
+    @Override
+    public Photo findOneByProvince(String username, String province) {
+        return photoDao.findTopByAuthorAndAddress_Province(username,province);
     }
 
     @Override
@@ -72,6 +78,16 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public Long countByCity(String userName, String cityName) {
         return photoDao.countAllByAuthorAndAddress_City(userName,cityName);
+    }
+
+    @Override
+    public Page<Photo> getByDistrict(String username, String district, PageRequest of) {
+        return photoDao.findAllByAuthorAndAddress_DistrictOrderByUploadDesc(username,district,of);
+    }
+
+    @Override
+    public Page<Photo> getByProvince(String username, String province, PageRequest of) {
+        return photoDao.findAllByAuthorAndAddress_ProvinceOrderByUploadDesc(username,province,of);
     }
 
     @Override
@@ -89,8 +105,36 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
+    public Map<String, Long> getDistrictList(String username) {
+        ArrayList<Photo> all = photoDao.findAllByAuthorAndAddressNotNull(username);
+        HashSet<String> provinces = new HashSet<>();
+        all.forEach(e-> provinces.add(e.getAddress().getDistrict()));
+        Iterator<String> iterator = provinces.iterator();
+        HashMap<String,Long> map = new HashMap<>();
+        while (iterator.hasNext()){
+            String next = iterator.next();
+            map.put(next,countByCity(username,next));
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Long> getProvinceList(String username) {
+        ArrayList<Photo> all = photoDao.findAllByAuthorAndAddressNotNull(username);
+        HashSet<String> provinces = new HashSet<>();
+        all.forEach(e-> provinces.add(e.getAddress().getProvince()));
+        Iterator<String> iterator = provinces.iterator();
+        HashMap<String,Long> map = new HashMap<>();
+        while (iterator.hasNext()){
+            String next = iterator.next();
+            map.put(next,countByCity(username,next));
+        }
+        return map;
+    }
+
+    @Override
     public Map<String, Long> getTypeList(String userName) {
-        String[] types = GetPhotoType.getTypes();
+        String[] types = getPhotoType.getTypes();
         HashMap<String, Long> stringLongHashMap = new HashMap<>();
         for (String s:types){
             Long aLong = photoDao.countAllByAuthorAndTypeContaining(userName, s);
@@ -158,9 +202,9 @@ public class PhotoServiceImpl implements PhotoService {
             bytes = byteArrayOutputStream.toByteArray();
             ObjectId store1 = gridFsTemplate.store(new ByteArrayInputStream(bytes), photo.getThumbnailName());
             photo = save(photo);
-            photo.setAddress(GetAddressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
+            photo.setAddress(addressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
             //调用py接口获取照片类别
-            photo.setType(GetPhotoType.getPhotoType(bytes));
+            photo.setType(getPhotoType.getPhotoType(bytes));
             //TODO:判断是不是人，执行下一步操作
         } catch (Exception e) {
             e.printStackTrace();

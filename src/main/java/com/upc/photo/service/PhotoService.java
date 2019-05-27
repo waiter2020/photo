@@ -5,6 +5,7 @@ import com.upc.photo.model.Album;
 import com.upc.photo.model.Photo;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,11 +30,24 @@ public interface PhotoService {
 
     Photo findOneByCity(String userName,String cityName);
 
+    Photo findOneByDistrict(String username, String district);
+
+    Photo findOneByProvince(String username, String province);
+
     Photo findOneByType(String userName,String type);
 
     Long countByCity(String userName,String cityName);
 
+    Page<Photo> getByDistrict(String username, String district, PageRequest of);
+
+    Page<Photo> getByProvince(String username, String province, PageRequest of);
+
     Map<String,Long> getCityList(String userName);
+
+    Map<String, Long> getDistrictList(String username);
+
+    Map<String, Long> getProvinceList(String username);
+
     Map<String,Long> getTypeList(String userName);
 
     void delete(Photo photo);
