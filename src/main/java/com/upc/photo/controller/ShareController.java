@@ -48,8 +48,8 @@ public class ShareController {
     @PreAuthorize("hasAnyRole('USER')")
     @ApiOperation(value = "添加分享",notes = "除了id和author之外其它字段都需要填上,type=0是相册分享，1是照片分享")
     @PostMapping("/add")
-    public Share addShare(Share share, Authentication authentication){
-        Assert.notNull(share.getShareList(),"分享列表不为空");
+    public Share addShare(@RequestBody Share share, Authentication authentication){
+//        Assert.notNull(share.getShareList(),"分享列表不为空");
         if (!StringUtils.isEmpty(share.getPassword())){
             share.setPassword(passwordEncoder.encode(share.getPassword()));
         }
