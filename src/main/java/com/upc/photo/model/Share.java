@@ -1,6 +1,10 @@
 package com.upc.photo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.upc.photo.component.BigIntegerJsonDeSerializer;
+import com.upc.photo.component.BigIntegerJsonSerializer;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -36,7 +40,6 @@ public class Share implements Serializable {
     /**
      * 加密分享的密码
      */
-    @JsonIgnore
     private String password;
 
     /**
