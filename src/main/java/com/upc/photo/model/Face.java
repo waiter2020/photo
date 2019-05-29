@@ -1,5 +1,6 @@
 package com.upc.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.upc.photo.component.BigIntegerJsonDeSerializer;
@@ -12,6 +13,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -39,7 +41,10 @@ public class Face implements Serializable {
     private String name;
 
 
+    @JsonIgnore
     private byte[] bytes;
+
+    @JsonIgnore
     private double[][] matrix;
 
     @CreatedBy
