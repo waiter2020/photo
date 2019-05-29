@@ -41,8 +41,8 @@ public class GetPhotoType {
 
 
     private  List<String> getResult(Result result){
-        Double[][] predictions = result.getPredictions();
-        Double[] doubles = predictions[0];
+        double[][] predictions = result.getPredictions();
+        double[] doubles = predictions[0];
         ArrayList<String> type = new ArrayList<>();
         int i=0;
 
@@ -64,5 +64,5 @@ public class GetPhotoType {
 
 @Data
 class Result{
-    private Double[][] predictions;
+    private double[][] predictions;
 }

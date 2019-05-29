@@ -1,11 +1,11 @@
 package com.upc.photo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.upc.photo.component.BigIntegerJsonDeSerializer;
 import com.upc.photo.component.BigIntegerJsonSerializer;
 import lombok.Data;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -20,25 +20,30 @@ import java.util.Date;
 
 /**
  * @Author: waiter
- * @Date: 2019/4/8 18:17
+ * @Date: 2019/5/27 11:38
  * @Version 1.0
  */
 @Document
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Album implements Serializable {
-
+public class Face implements Serializable {
     @Id
     @Indexed
     @JsonSerialize(using = BigIntegerJsonSerializer.class)
     @JsonDeserialize(using = BigIntegerJsonDeSerializer.class)
     private BigInteger id;
 
+    @JsonSerialize(using = BigIntegerJsonSerializer.class)
+    @JsonDeserialize(using = BigIntegerJsonDeSerializer.class)
+    private BigInteger photoId;
+
     private String name;
-    private String description;
+
+
+    private byte[] bytes;
+    private double[][] matrix;
+
     @CreatedBy
     private String author;
-
     @CreatedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date create;

@@ -6,15 +6,20 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.upc.photo.dao.FaceDao;
 import com.upc.photo.dao.PhotoDao;
 import com.upc.photo.model.Album;
+import com.upc.photo.model.Face;
 import com.upc.photo.model.Photo;
 
 import com.upc.photo.model.RestPage;
 import com.upc.photo.service.PhotoService;
 import com.upc.photo.utils.GetAddressByBaidu;
+import com.upc.photo.utils.GetFaces;
 import com.upc.photo.utils.GetPhotoType;
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,12 +50,18 @@ public class PhotoServiceImpl implements PhotoService {
     private final GridFsTemplate gridFsTemplate;
     private final GetPhotoType getPhotoType;
     private final GetAddressByBaidu addressByBaidu;
+    private final GetFaces getFaces;
+    private final FaceDao faceDao;
+    private final FaceGroupServiceImpl faceGroupService;
 
-    public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu) {
+    public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu, GetFaces getFaces, FaceDao faceDao, FaceGroupServiceImpl faceGroupService) {
         this.photoDao = photoDao;
         this.gridFsTemplate = gridFsTemplate;
         this.getPhotoType = getPhotoType;
         this.addressByBaidu = addressByBaidu;
+        this.getFaces = getFaces;
+        this.faceDao = faceDao;
+        this.faceGroupService = faceGroupService;
     }
 
 
@@ -152,6 +163,7 @@ public class PhotoServiceImpl implements PhotoService {
     public void delete(Photo photo) {
         gridFsTemplate.delete(query(whereFilename().is(photo.getFileName())));
         gridFsTemplate.delete(query(whereFilename().is(photo.getThumbnailName())));
+        faceDao.deleteAll(photo.getFaces());
         photoDao.delete(photo);
     }
 
@@ -205,14 +217,38 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setAddress(addressByBaidu.getAddress(location.getLatitude(), location.getLongitude()));
             //调用py接口获取照片类别
             photo.setType(getPhotoType.getPhotoType(bytes));
-            //TODO:判断是不是人，执行下一步操作
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        save(photo);
+        photo = save(photo);
+        //TODO:判断是不是人，执行下一步操作
+        getFace(photo,bytes);
     }
 
+    private void getFace(Photo photo,byte[] bytes){
+        String s = photo.getType().toString();
+        if(!s.contains("PERSON")){
+            return;
+        }
+        List<Face> face = getFaces.getFace(photo.getId(),photo.getAuthor(), bytes);
+        if (face.isEmpty()){
+            return;
+        }
+        List<Face> faces = faceDao.saveAll(face);
 
+        photo.setFaces(faces);
+        photoDao.save(photo);
+
+
+        //TODO: 计算距离
+        faceGroupService.analyze(faces);
+
+
+
+    }
+
+    @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+'*'+#photo.author+'-*'", allEntries = true)
     @Override
     public Photo save(Photo photo) {
         return photoDao.save(photo);
