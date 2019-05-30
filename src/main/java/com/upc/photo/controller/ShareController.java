@@ -54,7 +54,7 @@ public class ShareController {
             share.setPassword(passwordEncoder.encode(share.getPassword()));
         }
 
-        if (share.getExpiration() == null||share.getExpiration()<1) {
+        if (share.getExpiration() == null) {
             share.setExpiration((long) (24 * 60 * 60));
         }
 
