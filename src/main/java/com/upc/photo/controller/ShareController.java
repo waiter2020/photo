@@ -65,9 +65,9 @@ public class ShareController {
     }
 
     @ApiOperation(value = "获取分享信息",notes = "密码采用Base64位加密，在前端加密后再提交后端解密")
-    @GetMapping({"/get/{id}/{password}","/get/{id}"})
+    @GetMapping("/get/{id}")
     public Share getShare(@PathVariable("id") Share share,
-                          @PathVariable(required = false) String password){
+                          @RequestParam(required = false) String password){
         if (StringUtils.isEmpty(share.getPassword())){
             return share;
         }
