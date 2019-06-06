@@ -63,14 +63,17 @@ public class ShareController {
         share.setId(UUID.randomUUID().toString());
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         share.setAuthor(username);
-        return shareService.add(share);
+        Share add = shareService.add(share);
+        add.setPassword("");
+        return add;
     }
 
     @ApiOperation(value = "获取分享信息",notes = "密码采用Base64位加密，在前端加密后再提交后端解密")
     @GetMapping("/get/{id}")
     public Share getShare(@PathVariable("id") Share share,
-                          @RequestParam(required = false) String password) throws UnsupportedEncodingException {
+                          @RequestParam(value = "password",required = false) String password) throws UnsupportedEncodingException {
         if (StringUtils.isEmpty(share.getPassword())){
+            share.setPassword("");
             return share;
         }
         if (StringUtils.isEmpty(password)){
@@ -84,7 +87,7 @@ public class ShareController {
         if (!passwordEncoder.matches(s,share.getPassword())){
             return null;
         }
-
+        share.setPassword("");
         return share;
     }
 
