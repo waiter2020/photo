@@ -20,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -67,7 +69,7 @@ public class ShareController {
     @ApiOperation(value = "获取分享信息",notes = "密码采用Base64位加密，在前端加密后再提交后端解密")
     @GetMapping("/get/{id}")
     public Share getShare(@PathVariable("id") Share share,
-                          @RequestParam(required = false) String password){
+                          @RequestParam(required = false) String password) throws UnsupportedEncodingException {
         if (StringUtils.isEmpty(share.getPassword())){
             return share;
         }
@@ -76,7 +78,7 @@ public class ShareController {
         }
 
         Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decode = decoder.decode(password);
+        byte[] decode = decoder.decode(password.getBytes(StandardCharsets.UTF_8));
         String s = new String(decode);
 
         if (!passwordEncoder.matches(s,share.getPassword())){
