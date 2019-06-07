@@ -4,9 +4,13 @@ import com.upc.photo.dao.FaceGroupDao;
 import com.upc.photo.model.Face;
 import com.upc.photo.model.FaceGroup;
 import com.upc.photo.service.FaceGroupService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.jboss.logging.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +24,7 @@ import java.util.List;
 @Service
 public class FaceGroupServiceImpl implements FaceGroupService {
     private final FaceGroupDao faceGroupDao;
+    private final Log logger = LogFactory.getLog(FaceGroupServiceImpl.class);
 
     public FaceGroupServiceImpl(FaceGroupDao faceGroupDao) {
         this.faceGroupDao = faceGroupDao;
@@ -50,7 +55,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
             all.forEach(faceGroup -> {
                 RealMatrix matrix2 = new Array2DRowRealMatrix(faceGroup.getFace().getMatrix());
                 double dist = getDist(matrix, matrix2);
-                System.out.println(dist);
+                logger.warn(dist);
                 if (dist< minDist[0]){
                     minDist[0] = dist;
                     faceGroup0[0] =faceGroup;
