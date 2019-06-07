@@ -37,7 +37,7 @@ public class Share implements Serializable {
     /**
      * 分享的相册或照片的id列表
      */
-    private List<BigInteger> shareList;
+    private List<String> shareList;
 
     /**
      * 加密分享的密码
