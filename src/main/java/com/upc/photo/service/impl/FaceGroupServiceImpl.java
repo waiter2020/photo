@@ -33,15 +33,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
 
     @Override
     public ArrayList<FaceGroup> findAll(String username) {
-        ArrayList<FaceGroup> all = faceGroupDao.findAllByAuthor(username);
-        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
-        all.forEach(faceGroup -> {
-            if (faceGroup.getFaces().size()<3){
-                faceGroups.add(faceGroup);
-            }
-        });
-        all.removeAll(faceGroups);
-        return all;
+        return faceGroupDao.findAllByAuthor(username);
     }
 
     @Override

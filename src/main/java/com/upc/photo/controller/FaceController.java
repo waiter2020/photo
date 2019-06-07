@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +43,15 @@ public class FaceController {
     @ApiOperation("获取用户相册中的人脸")
     @GetMapping("/get_all")
     public List<FaceGroup> getAllFace(Authentication authentication){
-        return faceGroupService.findAll(((UserDetails) authentication.getPrincipal()).getUsername());
+        ArrayList<FaceGroup> all = faceGroupService.findAll(((UserDetails) authentication.getPrincipal()).getUsername());
+        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
+        all.forEach(faceGroup -> {
+            if (faceGroup.getFaces().size()<3){
+                faceGroups.add(faceGroup);
+            }
+        });
+        all.removeAll(faceGroups);
+        return all;
     }
 
     @ApiOperation("获取一张人脸图像")
