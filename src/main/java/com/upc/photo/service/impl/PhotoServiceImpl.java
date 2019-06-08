@@ -167,7 +167,7 @@ public class PhotoServiceImpl implements PhotoService {
         photoDao.delete(photo);
     }
 
-    @Async
+
     @Caching(evict = {
             @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplgetAlbumPhoto-'+#photo.album+'-*'", allEntries = true),
             @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+#photo.author+'-*'", allEntries = true)
