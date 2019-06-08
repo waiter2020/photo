@@ -5,6 +5,8 @@ import com.upc.photo.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 /**
  * @Author: waiter
  * @Date: 2019/4/3 13:14
@@ -31,5 +33,7 @@ public interface UserService extends UserDetailsService {
     User createUser(User user);
 
     User save(User user);
+
+    List<User> findAll();
 
 }

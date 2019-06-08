@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -113,6 +114,10 @@ public class UserServiceImpl implements  UserService {
         return userDao.save(user);
     }
 
+    @Override
+    public List<User> findAll() {
+        return userDao.findAll();
+    }
 
 
     @Override
