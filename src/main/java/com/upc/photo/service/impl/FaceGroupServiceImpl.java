@@ -84,7 +84,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         });
     }
 
-    @Scheduled(fixedRate=1000*60)
+    @Scheduled(fixedRate=1000*60*5)
     public void tasks() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
         List<User> all = userService.findAll();
