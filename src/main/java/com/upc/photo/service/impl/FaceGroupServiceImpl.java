@@ -33,7 +33,15 @@ public class FaceGroupServiceImpl implements FaceGroupService {
 
     @Override
     public ArrayList<FaceGroup> findAll(String username) {
-        return faceGroupDao.findAllByAuthor(username);
+        ArrayList<FaceGroup> allByAuthor = faceGroupDao.findAllByAuthor(username);
+        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
+        allByAuthor.forEach(e->{
+            if (e.getFace()==null){
+                faceGroups.add(e);
+            }
+        });
+        allByAuthor.removeAll(faceGroups);
+        return allByAuthor;
     }
 
     @Override
@@ -41,20 +49,18 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         ArrayList<FaceGroup> all = findAll(faces.get(0).getAuthor());
         faces.forEach(f->{
             RealMatrix matrix = new Array2DRowRealMatrix(f.getMatrix());
-            final double[] minDist = {2};
-            final FaceGroup[] faceGroup0 = {null};
 
+            ArrayList<FaceGroup> faceGroups = new ArrayList<>();
             all.forEach(faceGroup -> {
                 RealMatrix matrix2 = new Array2DRowRealMatrix(faceGroup.getFace().getMatrix());
                 double dist = getDist(matrix, matrix2);
                 logger.warn(dist);
-                if (dist< minDist[0]){
-                    minDist[0] = dist;
-                    faceGroup0[0] =faceGroup;
+                if (dist< 1){
+                    faceGroups.add(faceGroup);
                 }
             });
 
-            if (faceGroup0[0]==null||minDist[0]>1){
+            if (faceGroups.size()<1){
                 FaceGroup faceGroup = new FaceGroup();
                 faceGroup.setAuthor(f.getAuthor());
                 faceGroup.setFace(f);
@@ -65,11 +71,13 @@ public class FaceGroupServiceImpl implements FaceGroupService {
                 return;
             }
 
-            FaceGroup faceGroup = faceGroup0[0];
-            List<Face> faces1 = faceGroup.getFaces();
-            faces1.add(f);
-            faceGroup.setFaces(faces1);
-            faceGroupDao.save(faceGroup);
+            faceGroups.forEach(faceGroup -> {
+                List<Face> faces1 = faceGroup.getFaces();
+                faces1.add(f);
+                faceGroup.setFaces(faces1);
+                faceGroupDao.save(faceGroup);
+            });
+
 
         });
     }
@@ -77,6 +85,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
 
     private double getDist(RealMatrix matrix1,RealMatrix matrix2){
         RealMatrix subtract = matrix1.subtract(matrix2);
+
         double[][] data = subtract.getData();
         double sum = 0;
         for (double[] d : data) {
