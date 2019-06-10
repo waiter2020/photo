@@ -77,7 +77,7 @@ public class Photo implements Serializable{
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date modify;
 
-    @JsonIgnore
+
     @DBRef
     private List<Face> faces;
 
