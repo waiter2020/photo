@@ -99,18 +99,20 @@ public class GetFaceGroup {
             faceGroup.setId(BigInteger.probablePrime(80,new Random()));
             for (int i = 0; i <cluster.length ; i++) {
                 face = faces.remove(i);
+                if (cluster[i]==-1){
+                    face.setGroupId(null);
+                }
                 if (cluster[i]==num){
                     f=true;
                     List<Face> faces1 = faceGroup.getFaces();
                     if (face.getGroupId()!=null) {
-                        FaceGroup byId = faceGroupService.findById(face.getGroupId());
+                        FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
                         faceGroup.setName(byId.getName());
                     }
-                    face.setGroupId(faceGroup.getId());
+                    face.setGroupId(faceGroup.getId().toString());
                     faces1.add(face);
                     faceGroup.setFaces(faces1);
-                }else {
-                    face.setGroupId(null);
+                    faceGroup.setFace(face);
                 }
                 faces.add(i,face);
             }
@@ -121,8 +123,7 @@ public class GetFaceGroup {
         }
         faceGroupService.deleteAll(face.getAuthor());
         faceDao.saveAll(faces);
-        List<FaceGroup> faceGroups1 = faceGroupService.saveAll(faceGroups);
-        return faceGroups;
+        return faceGroupService.saveAll(faceGroups);
     }
 
 
