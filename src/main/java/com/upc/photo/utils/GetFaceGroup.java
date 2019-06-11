@@ -99,7 +99,7 @@ public class GetFaceGroup {
             faceGroup = JSON.parseObject(s, FaceGroup.class);
             faceGroup.setId(BigInteger.probablePrime(80,new Random()));
             for (int i = 0; i <cluster.length ; i++) {
-                face = faces.get(i);
+                face = faces.remove(i);
                 if (cluster[i]==num){
                     f=true;
                     List<Face> faces1 = faceGroup.getFaces();
@@ -113,6 +113,7 @@ public class GetFaceGroup {
                 }else {
                     face.setGroupId(null);
                 }
+                faces.add(i,face);
             }
             if (f){
                 faceGroups.add(faceGroup);
