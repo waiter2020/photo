@@ -43,15 +43,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
 
     @Override
     public ArrayList<FaceGroup> findAll(String username) {
-        ArrayList<FaceGroup> allByAuthor = faceGroupDao.findAllByAuthor(username);
-        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
-        allByAuthor.forEach(e->{
-            if (e.getFace()==null){
-                faceGroups.add(e);
-            }
-        });
-        allByAuthor.removeAll(faceGroups);
-        return allByAuthor;
+        return faceGroupDao.findAllByAuthor(username);
     }
 
     @Override
@@ -62,6 +54,13 @@ public class FaceGroupServiceImpl implements FaceGroupService {
     @Override
     public void analyze(List<Face> faces) {
         ArrayList<FaceGroup> all = findAll(faces.get(0).getAuthor());
+        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
+        all.forEach(e->{
+            if (e.getFace()==null){
+                faceGroups.add(e);
+            }
+        });
+        all.removeAll(faceGroups);
         faces.forEach(f->{
             RealMatrix matrix = new Array2DRowRealMatrix(f.getMatrix());
             final double[] minDist = {2};
