@@ -33,11 +33,11 @@ public class FaceGroupServiceImpl implements FaceGroupService {
     private final FaceDao faceDao;
     private final GetFaceGroup getFaceGroup;
 
-    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao, GetFaceGroup getFaceGroup) {
+    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao) {
         this.faceGroupDao = faceGroupDao;
         this.userService = userService;
         this.faceDao = faceDao;
-        this.getFaceGroup = getFaceGroup;
+        this.getFaceGroup = new GetFaceGroup(this,faceDao);
     }
 
 

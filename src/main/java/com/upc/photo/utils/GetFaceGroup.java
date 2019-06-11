@@ -24,7 +24,6 @@ import java.util.*;
  * @Date: 2019/6/10 17:56
  * @Version 1.0
  */
-@Component
 public class GetFaceGroup {
     private final FaceGroupService faceGroupService;
     private final FaceDao faceDao;
