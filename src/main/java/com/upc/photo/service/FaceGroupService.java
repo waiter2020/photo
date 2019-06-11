@@ -3,6 +3,7 @@ package com.upc.photo.service;
 import com.upc.photo.model.Face;
 import com.upc.photo.model.FaceGroup;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,12 @@ import java.util.List;
 public interface FaceGroupService {
     ArrayList<FaceGroup> findAll(String username);
 
+    void deleteAll(String userName);
+
     void analyze(List<Face> faces);
+
+    FaceGroup findById(BigInteger id);
+
+    List<FaceGroup> saveAll(Iterable<? extends FaceGroup> faceGroups);
 
 }

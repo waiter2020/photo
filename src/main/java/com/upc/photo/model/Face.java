@@ -38,6 +38,11 @@ public class Face implements Serializable {
     @JsonDeserialize(using = BigIntegerJsonDeSerializer.class)
     private BigInteger photoId;
 
+    @Field
+    @JsonSerialize(using = BigIntegerJsonSerializer.class)
+    @JsonDeserialize(using = BigIntegerJsonDeSerializer.class)
+    private BigInteger groupId;
+
     private String name;
 
 

@@ -1,11 +1,13 @@
 package com.upc.photo.service.impl;
 
+import com.upc.photo.dao.FaceDao;
 import com.upc.photo.dao.FaceGroupDao;
 import com.upc.photo.model.Face;
 import com.upc.photo.model.FaceGroup;
 import com.upc.photo.model.User;
 import com.upc.photo.service.FaceGroupService;
 import com.upc.photo.service.UserService;
+import com.upc.photo.utils.GetFaceGroup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -13,6 +15,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +30,14 @@ public class FaceGroupServiceImpl implements FaceGroupService {
     private final FaceGroupDao faceGroupDao;
     private final Log logger = LogFactory.getLog(FaceGroupServiceImpl.class);
     private final UserService userService;
+    private final FaceDao faceDao;
+    private final GetFaceGroup getFaceGroup;
 
-    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService) {
+    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao, GetFaceGroup getFaceGroup) {
         this.faceGroupDao = faceGroupDao;
         this.userService = userService;
+        this.faceDao = faceDao;
+        this.getFaceGroup = getFaceGroup;
     }
 
 
@@ -45,6 +52,11 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         });
         allByAuthor.removeAll(faceGroups);
         return allByAuthor;
+    }
+
+    @Override
+    public void deleteAll(String userName) {
+        faceGroupDao.deleteAllByAuthor(userName);
     }
 
     @Override
@@ -84,32 +96,23 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         });
     }
 
+    @Override
+    public FaceGroup findById(BigInteger id) {
+        return faceGroupDao.findById(id).get();
+    }
+
+    @Override
+    public List<FaceGroup> saveAll(Iterable<? extends FaceGroup> faceGroups) {
+        return faceGroupDao.saveAll((Iterable<FaceGroup>) faceGroups);
+    }
+
     @Scheduled(fixedRate=1000*60*5)
     public void tasks() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
         List<User> all = userService.findAll();
         all.forEach(u->{
-            ArrayList<FaceGroup> allByAuthor = faceGroupDao.findAllByAuthor(u.getUsername());
-            ArrayList<FaceGroup> deleteGroups = new ArrayList<>();
-            for (int i = 0; i <allByAuthor.size()-1 ; i++) {
-                FaceGroup faceGroup = allByAuthor.get(i);
-                Array2DRowRealMatrix array2DRowRealMatrix = new Array2DRowRealMatrix(faceGroup.getFace().getMatrix());
-                for (int j = i+1; j <allByAuthor.size(); j++) {
-                    FaceGroup faceGroup1 = allByAuthor.get(j);
-                    Array2DRowRealMatrix array2DRowRealMatrix1 = new Array2DRowRealMatrix(faceGroup1.getFace().getMatrix());
-                    double dist = getDist(array2DRowRealMatrix, array2DRowRealMatrix1);
-                    if (dist<1){
-                        deleteGroups.add(faceGroup1);
-                        allByAuthor.remove(faceGroup1);
-                        j--;
-                        List<Face> faces = faceGroup.getFaces();
-                        faces.addAll(faceGroup1.getFaces());
-                        faceGroup.setFaces(faces);
-                    }
-                }
-            }
-            faceGroupDao.saveAll(allByAuthor);
-            faceGroupDao.deleteAll(deleteGroups);
+            ArrayList<Face> allByAuthor = faceDao.findAllByAuthor(u.getUsername());
+            getFaceGroup.getGetFaceGroup(allByAuthor);
         });
 
     }

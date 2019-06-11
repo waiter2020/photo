@@ -15,4 +15,5 @@ import java.util.ArrayList;
 
 public interface FaceGroupDao extends MongoRepository<FaceGroup, BigInteger> {
     ArrayList<FaceGroup> findAllByAuthor(String author);
+    void deleteAllByAuthor(String username);
 }

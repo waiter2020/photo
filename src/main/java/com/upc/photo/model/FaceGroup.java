@@ -32,6 +32,8 @@ public class FaceGroup {
     @JsonDeserialize(using = BigIntegerJsonDeSerializer.class)
     private BigInteger id;
 
+    private String name;
+
     @DBRef
     private Face face;
 

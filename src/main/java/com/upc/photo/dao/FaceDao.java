@@ -4,6 +4,7 @@ import com.upc.photo.model.Face;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * @Author: waiter
@@ -12,4 +13,6 @@ import java.math.BigInteger;
  */
 
 public interface FaceDao extends MongoRepository<Face, BigInteger> {
+    ArrayList<Face> findAllByAuthor(String username);
+
 }

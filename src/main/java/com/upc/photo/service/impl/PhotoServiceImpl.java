@@ -242,11 +242,6 @@ public class PhotoServiceImpl implements PhotoService {
         photoDao.save(photo);
 
 
-        //TODO: 计算距离
-        faceGroupService.analyze(faces);
-
-
-
     }
 
     @CacheEvict(cacheNames = "photos", key = "'com.upc.photo.service.impl.PhotoServiceImplfindAll-'+'*'+#photo.author+'-*'", allEntries = true)
