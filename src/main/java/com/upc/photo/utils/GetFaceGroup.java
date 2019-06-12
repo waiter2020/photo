@@ -86,7 +86,7 @@ public class GetFaceGroup {
         Face face = faces.get(0);
         FaceGroup faceGroup = new FaceGroup();
         faceGroup.setAuthor(face.getAuthor());
-        faceGroup.setFaces(new LinkedList<>());
+        faceGroup.setFaces(new HashMap<>(2));
         faceGroup.setCreate(new Date());
         faceGroup.setModify(new Date());
         String s = JSON.toJSONString(faceGroup);
@@ -104,7 +104,7 @@ public class GetFaceGroup {
                 }
                 if (cluster[i]==num){
                     f=true;
-                    List<String> faces1 = faceGroup.getFaces();
+                    Map<String,String> faces1 = faceGroup.getFaces();
                     if (face.getGroupId()!=null) {
                         try {
                             FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
@@ -115,7 +115,7 @@ public class GetFaceGroup {
 
                     }
                     face.setGroupId(faceGroup.getId().toString());
-                    faces1.add(face.getId().toString());
+                    faces1.put(face.getId().toString(),face.getPhotoId().toString());
                     faceGroup.setFaces(faces1);
                     faceGroup.setFace(face.getId().toString());
                 }

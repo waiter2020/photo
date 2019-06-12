@@ -18,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: waiter
@@ -39,7 +40,8 @@ public class FaceGroup {
     private String face;
 
 
-    private List<String> faces;
+
+    private Map<String,String> faces;
 
     @CreatedBy
     private String author;

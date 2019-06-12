@@ -50,8 +50,11 @@ public class FaceController {
     @ApiOperation("根据groupID取分组")
     @GetMapping("/get_group/{id}")
     public FaceGroup getById(@PathVariable("id") FaceGroup faceGroup){
+        Assert.notNull(faceGroup,"id错误");
         return faceGroup;
     }
+
+
 
 
     @ApiOperation("获取一张人脸图像")
