@@ -80,16 +80,16 @@ public class FaceGroupServiceImpl implements FaceGroupService {
                 FaceGroup faceGroup = new FaceGroup();
                 faceGroup.setAuthor(f.getAuthor());
                 faceGroup.setFace(f);
-                ArrayList<Face> objects = new ArrayList<>();
-                objects.add(f);
+                ArrayList<String> objects = new ArrayList<>();
+                objects.add(f.getId().toString());
                 faceGroup.setFaces(objects);
                 faceGroupDao.save(faceGroup);
                 return;
             }
 
             FaceGroup faceGroup = faceGroup0[0];
-            List<Face> faces1 = faceGroup.getFaces();
-            faces1.add(f);
+            List<String> faces1 = faceGroup.getFaces();
+            faces1.add(f.getId().toString());
             faceGroup.setFaces(faces1);
             faceGroupDao.save(faceGroup);
         });
@@ -105,7 +105,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         return faceGroupDao.saveAll((Iterable<FaceGroup>) faceGroups);
     }
 
-    @Scheduled(fixedRate=1000*60*5)
+   // @Scheduled(fixedRate=1000*60*5)
     public void tasks() {
         System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
         List<User> all = userService.findAll();

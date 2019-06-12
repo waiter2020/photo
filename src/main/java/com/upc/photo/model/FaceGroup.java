@@ -38,9 +38,8 @@ public class FaceGroup {
     @DBRef
     private Face face;
 
-    @JsonIgnore
-    @DBRef(lazy = true)
-    private List<Face> faces;
+
+    private List<String> faces;
 
     @CreatedBy
     private String author;

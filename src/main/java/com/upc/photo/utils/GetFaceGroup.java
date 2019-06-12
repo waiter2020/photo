@@ -104,13 +104,18 @@ public class GetFaceGroup {
                 }
                 if (cluster[i]==num){
                     f=true;
-                    List<Face> faces1 = faceGroup.getFaces();
+                    List<String> faces1 = faceGroup.getFaces();
                     if (face.getGroupId()!=null) {
-                        FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
-                        faceGroup.setName(byId.getName());
+                        try {
+                            FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
+                            faceGroup.setName(byId.getName());
+                        }catch (Exception e){
+
+                        }
+
                     }
                     face.setGroupId(faceGroup.getId().toString());
-                    faces1.add(face);
+                    faces1.add(face.getId().toString());
                     faceGroup.setFaces(faces1);
                     faceGroup.setFace(face);
                 }
