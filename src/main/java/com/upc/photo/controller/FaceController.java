@@ -43,15 +43,8 @@ public class FaceController {
     @ApiOperation("获取用户相册中的人脸")
     @GetMapping("/get_all")
     public List<FaceGroup> getAllFace(Authentication authentication){
-        ArrayList<FaceGroup> all = faceGroupService.findAll(((UserDetails) authentication.getPrincipal()).getUsername());
-        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
-        all.forEach(faceGroup -> {
-            if (faceGroup.getFaces().size()<3){
-                faceGroups.add(faceGroup);
-            }
-        });
-        all.removeAll(faceGroups);
-        return all;
+
+        return faceGroupService.findAll(((UserDetails) authentication.getPrincipal()).getUsername());
     }
 
     @ApiOperation("根据groupID取分组")

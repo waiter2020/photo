@@ -36,7 +36,7 @@ public class FaceGroup {
     private String name;
 
     @DBRef
-    private Face face;
+    private String face;
 
 
     private List<String> faces;

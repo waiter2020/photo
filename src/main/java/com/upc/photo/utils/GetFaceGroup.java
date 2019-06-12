@@ -117,7 +117,7 @@ public class GetFaceGroup {
                     face.setGroupId(faceGroup.getId().toString());
                     faces1.add(face.getId().toString());
                     faceGroup.setFaces(faces1);
-                    faceGroup.setFace(face);
+                    faceGroup.setFace(face.getId().toString());
                 }
                 faces.add(i,face);
             }

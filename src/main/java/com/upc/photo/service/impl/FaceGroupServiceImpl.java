@@ -51,49 +51,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         faceGroupDao.deleteAllByAuthor(userName);
     }
 
-    @Override
-    public void analyze(List<Face> faces) {
-        ArrayList<FaceGroup> all = findAll(faces.get(0).getAuthor());
-        ArrayList<FaceGroup> faceGroups = new ArrayList<>();
-        all.forEach(e->{
-            if (e.getFace()==null){
-                faceGroups.add(e);
-            }
-        });
-        all.removeAll(faceGroups);
-        faces.forEach(f->{
-            RealMatrix matrix = new Array2DRowRealMatrix(f.getMatrix());
-            final double[] minDist = {2};
-            final FaceGroup[] faceGroup0 = {null};
 
-            all.forEach(faceGroup -> {
-                RealMatrix matrix2 = new Array2DRowRealMatrix(faceGroup.getFace().getMatrix());
-                double dist = getDist(matrix, matrix2);
-                logger.warn(dist);
-                if (dist< minDist[0]){
-                    minDist[0] = dist;
-                    faceGroup0[0] =faceGroup;
-                }
-            });
-
-            if (faceGroup0[0]==null||minDist[0]>1){
-                FaceGroup faceGroup = new FaceGroup();
-                faceGroup.setAuthor(f.getAuthor());
-                faceGroup.setFace(f);
-                ArrayList<String> objects = new ArrayList<>();
-                objects.add(f.getId().toString());
-                faceGroup.setFaces(objects);
-                faceGroupDao.save(faceGroup);
-                return;
-            }
-
-            FaceGroup faceGroup = faceGroup0[0];
-            List<String> faces1 = faceGroup.getFaces();
-            faces1.add(f.getId().toString());
-            faceGroup.setFaces(faces1);
-            faceGroupDao.save(faceGroup);
-        });
-    }
 
     @Override
     public FaceGroup findById(BigInteger id) {

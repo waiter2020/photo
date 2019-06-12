@@ -18,7 +18,7 @@ public interface FaceGroupService {
 
     void deleteAll(String userName);
 
-    void analyze(List<Face> faces);
+
 
     FaceGroup findById(BigInteger id);
 
