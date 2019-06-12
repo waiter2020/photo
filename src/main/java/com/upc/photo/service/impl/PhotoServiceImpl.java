@@ -175,6 +175,7 @@ public class PhotoServiceImpl implements PhotoService {
     })
     @Override
     public void saveFile(byte[] bytes,Photo photo, String md5) {
+        byte[] v = bytes;
         Photo.Location location = photo.getLocationInstance();
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(new ByteArrayInputStream(bytes));
@@ -224,7 +225,7 @@ public class PhotoServiceImpl implements PhotoService {
         }
         photo = save(photo);
         //TODO:判断是不是人，执行下一步操作
-        getFace(photo,bytes);
+        getFace(photo,v);
     }
 
     private void getFace(Photo photo,byte[] bytes){

@@ -75,15 +75,5 @@ public class FaceGroupServiceImpl implements FaceGroupService {
     }
 
 
-    private double getDist(RealMatrix matrix1,RealMatrix matrix2){
-        RealMatrix subtract = matrix1.subtract(matrix2);
-        double[][] data = subtract.getData();
-        double sum = 0;
-        for (double[] d : data) {
-            for (double dd : d) {
-                sum+=Math.pow(dd,2);
-            }
-        }
-        return Math.sqrt(sum);
-    }
+
 }
