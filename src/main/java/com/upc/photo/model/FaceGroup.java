@@ -1,5 +1,6 @@
 package com.upc.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.upc.photo.component.BigIntegerJsonDeSerializer;
@@ -37,6 +38,7 @@ public class FaceGroup {
     @DBRef
     private Face face;
 
+    @JsonIgnore
     @DBRef(lazy = true)
     private List<Face> faces;
 

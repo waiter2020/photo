@@ -54,6 +54,13 @@ public class FaceController {
         return all;
     }
 
+    @ApiOperation("根据groupID取分组")
+    @GetMapping("/get_group/{id}")
+    public FaceGroup getById(@PathVariable("id") FaceGroup faceGroup){
+        return faceGroup;
+    }
+
+
     @ApiOperation("获取一张人脸图像")
     @GetMapping("/get_face/{id}")
     public ResponseEntity<InputStreamResource> getFace(@PathVariable("id")Face face) throws IOException {
