@@ -35,7 +35,7 @@ public class FaceGroup {
 
     private String name;
 
-    @DBRef
+
     private String face;
 
 
