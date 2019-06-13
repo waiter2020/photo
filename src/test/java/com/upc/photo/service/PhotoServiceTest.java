@@ -4,6 +4,7 @@ import com.drew.imaging.ImageProcessingException;
 import com.upc.photo.model.Address;
 import com.upc.photo.model.Face;
 import com.upc.photo.model.Photo;
+import com.upc.photo.service.impl.PhotoServiceImpl;
 import com.upc.photo.utils.GetAddressByBaidu;
 import com.upc.photo.utils.GetFaces;
 import com.upc.photo.utils.GetPhotoType;
@@ -27,7 +28,7 @@ import java.util.Set;
 public class PhotoServiceTest {
 
     @Autowired
-    private PhotoService photoService;
+    private PhotoServiceImpl photoService;
 
 
     @Test
@@ -43,8 +44,7 @@ public class PhotoServiceTest {
     @Autowired
     GetPhotoType getPhotoType;
 
-    @Autowired
-    GetFaces getFaces;
+
     @Test
     public void test2() throws IOException, ImageProcessingException {
         File file = new File("E:\\Py\\untitled\\8.jpg");
@@ -63,8 +63,10 @@ public class PhotoServiceTest {
 
     @Test
     public void test3(){
-        ArrayList<Photo> all = photoService.findAll("123456");
-        System.out.println(all);
+        ArrayList<Photo> all = photoService.findAll("1234567");
+        photoService.photos.add(all.get(0));
+        photoService.photos.add(all.get(1));
+        photoService.sync();
 
     }
 

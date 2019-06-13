@@ -14,12 +14,11 @@ import com.upc.photo.model.Photo;
 
 import com.upc.photo.model.RestPage;
 import com.upc.photo.service.PhotoService;
+import com.upc.photo.utils.ByteUtils;
 import com.upc.photo.utils.GetAddressByBaidu;
 import com.upc.photo.utils.GetFaces;
 import com.upc.photo.utils.GetPhotoType;
 import net.coobird.thumbnailator.Thumbnails;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
 import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,11 +29,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
@@ -53,16 +54,31 @@ public class PhotoServiceImpl implements PhotoService {
     private final GetFaces getFaces;
     private final FaceDao faceDao;
     private final FaceGroupServiceImpl faceGroupService;
+    public final CopyOnWriteArrayList<Photo> photos = new CopyOnWriteArrayList<>();
 
-    public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu, GetFaces getFaces, FaceDao faceDao, FaceGroupServiceImpl faceGroupService) {
+    public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu, FaceDao faceDao, FaceGroupServiceImpl faceGroupService) {
         this.photoDao = photoDao;
         this.gridFsTemplate = gridFsTemplate;
         this.getPhotoType = getPhotoType;
         this.addressByBaidu = addressByBaidu;
-        this.getFaces = getFaces;
+        this.getFaces = new GetFaces(this);
         this.faceDao = faceDao;
         this.faceGroupService = faceGroupService;
     }
+
+    @Scheduled(fixedRate=1000*60*5)
+    @Override
+    public void sync(){
+        ArrayList<Photo> photos = new ArrayList<>();
+        while (this.photos.size()>1){
+            photos.add(this.photos.remove(0));
+        }
+        if (photos.size()>0){
+            getFace(photos);
+        }
+
+    }
+
 
 
     @Override
@@ -225,22 +241,32 @@ public class PhotoServiceImpl implements PhotoService {
         }
         photo = save(photo);
         //TODO:判断是不是人，执行下一步操作
-        getFace(photo,v);
+        String s = photo.getType().toString();
+        if(s.contains("PERSON")){
+            photos.add(photo);
+        }
+        //getFace(photo,v);
     }
 
-    private void getFace(Photo photo,byte[] bytes){
-        String s = photo.getType().toString();
-        if(!s.contains("PERSON")){
-            return;
-        }
-        List<Face> face = getFaces.getFace(photo.getId(),photo.getAuthor(), bytes);
-        if (face.isEmpty()){
-            return;
-        }
-        List<Face> faces = faceDao.saveAll(face);
+    private void getFace(List<Photo> photos){
+        byte[][] bytes = new byte[photos.size()][];
+        for (int i = 0; i <photos.size() ; i++) {
+            Photo photo = photos.get(i);
+            GridFsResource photoResource = getPhotoResource(photo.getFileName());
+            try {
+                bytes[i] = ByteUtils.inputStreamConvertToByteArray(photoResource.getInputStream());
+            } catch (IOException ignore) {
 
-        photo.setFaces(faces);
-        photoDao.save(photo);
+            }
+        }
+        List<Face> face = getFaces.getFace(photos, bytes);
+//        if (face.isEmpty()){
+//            return;
+//        }
+        List<Face> faces = faceDao.saveAll(face);
+//
+//        photo.setFaces(faces);
+//        photoDao.save(photo);
 
 
     }
@@ -249,6 +275,11 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public Photo save(Photo photo) {
         return photoDao.save(photo);
+    }
+
+    @Override
+    public void saveAll(Iterable<Photo> iterable) {
+        photoDao.saveAll(iterable);
     }
 
     /**

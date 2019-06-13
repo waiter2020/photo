@@ -24,7 +24,7 @@ public class RequestUtils {
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encode = encoder.encode(bytes);
 
-        Result result = null;
+
         // 创建Httpclient对象
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;

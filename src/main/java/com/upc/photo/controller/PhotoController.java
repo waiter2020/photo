@@ -7,6 +7,7 @@ import com.upc.photo.model.Photo;
 
 
 import com.upc.photo.service.PhotoService;
+import com.upc.photo.utils.ByteUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.bson.types.ObjectId;
@@ -82,7 +83,7 @@ public class PhotoController {
         photo.setSize(file.getSize());
         photo.setAuthor(((UserDetails) authentication.getPrincipal()).getUsername());
         photo.setThumbnailName(uuid + "-" + "thumbnail" + "-" + file.getOriginalFilename());
-        photoService.saveFile(inputStreamConvertToByteArray(file.getInputStream()),photo,md5);
+        photoService.saveFile(ByteUtils.inputStreamConvertToByteArray(file.getInputStream()),photo,md5);
         return true;
     }
 
@@ -103,33 +104,6 @@ public class PhotoController {
     }
 
 
-    /**
-     * 把一个文件转化为byte字节数组。
-     *
-     * @return
-     */
-    private byte[] inputStreamConvertToByteArray(InputStream fis) {
-        byte[] data = null;
-
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            int len;
-            byte[] buffer = new byte[1024];
-            while ((len = fis.read(buffer)) != -1) {
-                baos.write(buffer, 0, len);
-            }
-
-            data = baos.toByteArray();
-
-            fis.close();
-            baos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return data;
-    }
 
 
     /**

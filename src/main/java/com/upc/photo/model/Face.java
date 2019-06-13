@@ -47,7 +47,7 @@ public class Face implements Serializable {
     private byte[] bytes;
 
     @JsonIgnore
-    private double[][] matrix;
+    private double[] matrix;
 
     @CreatedBy
     private String author;

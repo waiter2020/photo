@@ -39,7 +39,7 @@ public class GetFaceGroup {
         }
         String [] res= new String[faces.size()];
         for(int i=0;i<faces.size();i++){
-            res[i]=Arrays.toString(faces.get(i).getMatrix()[0]);
+            res[i]=Arrays.toString(faces.get(i).getMatrix());
         }
         String s = Arrays.toString(res);
 
@@ -109,7 +109,7 @@ public class GetFaceGroup {
                         try {
                             FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
                             faceGroup.setName(byId.getName());
-                        }catch (Exception e){
+                        }catch (Exception ignored){
 
                         }
 

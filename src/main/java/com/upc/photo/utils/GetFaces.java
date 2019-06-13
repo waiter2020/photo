@@ -2,57 +2,108 @@ package com.upc.photo.utils;
 
 import com.alibaba.fastjson.JSON;
 
+import com.upc.photo.model.Photo;
+import com.upc.photo.service.PhotoService;
 import lombok.Data;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.springframework.stereotype.Component;
 import com.upc.photo.model.Face;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.util.*;
 
 /**
  * @Author: waiter
  * @Date: 2019/5/27 10:27
  * @Version 1.0
  */
-@Component
+
 public class GetFaces {
-    public  List<Face> getFace(BigInteger id, String author, byte[] bytes)  {
+    private final PhotoService photoService;
+
+    public GetFaces(PhotoService photoService) {
+        this.photoService = photoService;
+    }
+
+    public  List<Face> getFace(List<Photo> photos, byte[][] bytes)  {
         String url = "http://101.132.132.225:8000/face_api/faceAlign";
-        String resultString = RequestUtils.get(url, bytes,"{ \"instances\" : \"%s\" }");
-        FacesResult faces = JSON.parseObject(resultString, FacesResult.class);
-        Base64.Decoder decoder = Base64.getDecoder();
-        ArrayList<Face> facesList = new ArrayList<>();
+        List<Face> allFace = new LinkedList<>();
+        for (int i = 0; i <bytes.length ; i++) {
+            Photo photo = photos.get(i);
+            String resultString = RequestUtils.get(url, bytes[i], "{ \"instances\" : \"%s\" }");
+            FacesResult faces = JSON.parseObject(resultString, FacesResult.class);
+            Base64.Decoder decoder = Base64.getDecoder();
+            ArrayList<Face> facesList = new ArrayList<>();
 
-        int i=0;
-        for (String s:faces.getFaces()){
-            byte[] decode = decoder.decode(s);
-            Face face = new Face();
-            face.setAuthor(author);
-            face.setName(String.format("face-%d.jpg",i));
-            face.setBytes(decode);
-            face.setPhotoId(id);
-            facesList.add(face);
-
-            i++;
+            int j = 0;
+            for (String s : faces.getFaces()) {
+                byte[] decode = decoder.decode(s);
+                Face face = new Face();
+                face.setAuthor(photo.getAuthor());
+                face.setName(String.format("face-%d.jpg", j));
+                face.setBytes(decode);
+                face.setPhotoId(photo.getId());
+                facesList.add(face);
+                j++;
+            }
+            allFace.addAll(facesList);
+            photo.setFaces(facesList);
         }
+        photoService.saveAll(photos);
 
         url = "http://101.132.132.225:8501/v1/models/facenet:predict";
-
+        Base64.Encoder encoder = Base64.getEncoder();
+        String[] faceByte = new String[allFace.size()];
+        for (int i = 0; i < allFace.size(); i++) {
+            faceByte[i] = new String(encoder.encode(allFace.get(i).getBytes()));
+        }
+        String res =Arrays.toString(faceByte);
         String format = "{\"signature_name\": \"calculate_embeddings\", \"instances\" : [{\"images\": { \"b64\": \"%s\" } }]}";
         String finalUrl = url;
-        facesList.forEach(e->{
-            String result = RequestUtils.get(finalUrl, e.getBytes(),format);
-            Result result1 = JSON.parseObject(result, Result.class);
-            e.setMatrix(result1.getPredictions());
-        });
-        return facesList;
+
+        // 创建Httpclient对象
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = null;
+        String resultString = "";
+        try {
+            // 创建Http Post请求
+            HttpPost httpPost = new HttpPost(url);
+
+            httpPost.setHeader("Content-type", "application/json; charset=utf-8");
+            httpPost.setHeader("Connection", "Close");
+
+            StringEntity stringEntity = new StringEntity(String.format(format, res), Charset.forName("utf-8"));
+
+
+            httpPost.setEntity(stringEntity);
+
+            // 执行http请求
+            response = httpClient.execute(httpPost);
+            resultString = EntityUtils.toString(response.getEntity(), "utf-8");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+
+        Result result1 = JSON.parseObject(resultString, Result.class);
+        double[][] predictions = result1.getPredictions();
+        for (int i = 0; i <predictions.length ; i++) {
+            allFace.get(i).setMatrix(predictions[i]);
+        }
+        return allFace;
     }
 }
 @Data

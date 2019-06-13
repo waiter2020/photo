@@ -61,6 +61,10 @@ public interface PhotoService {
 
     Photo save(Photo photo);
 
+    void saveAll(Iterable<Photo> iterable);
+
+    void sync();
+
     ArrayList<Photo> findAll(String userName);
 
     ArrayList<Photo> getAlbumPhoto(Album album);
