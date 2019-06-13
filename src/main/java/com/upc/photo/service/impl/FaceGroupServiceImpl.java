@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,13 +68,17 @@ public class FaceGroupServiceImpl implements FaceGroupService {
 
     @Scheduled(fixedRate=1000*60*5)
     public void tasks() {
-        System.err.println("执行静态定时任务时间: " + LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        System.err.println("执行静态定时任务1时间: " + now);
         List<User> all = userService.findAll();
         all.forEach(u->{
             ArrayList<Face> allByAuthor = faceDao.findAllByAuthor(u.getUsername());
             getFaceGroup.getGetFaceGroup(allByAuthor);
         });
-
+        LocalDateTime now1 = LocalDateTime.now();
+        long l = now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        long l1 = now1.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        System.err.println("执行静态定时任务1执行结束,运行时间: " + (l1-l));
     }
 
 

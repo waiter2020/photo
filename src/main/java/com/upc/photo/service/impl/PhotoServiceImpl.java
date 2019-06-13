@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -68,9 +69,11 @@ public class PhotoServiceImpl implements PhotoService {
         this.photos = new CopyOnWriteArrayList<>();
     }
 
+    @Override
     @Scheduled(fixedRate=1000*60*5)
     public void sync(){
-        System.err.println("执行静态定时任务2时间: " + LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        System.err.println("执行静态定时任务2时间: " + now);
         ArrayList<Photo> photos = new ArrayList<>();
         while (this.photos.size()>1){
             photos.add(this.photos.remove(0));
@@ -78,7 +81,10 @@ public class PhotoServiceImpl implements PhotoService {
         if (photos.size()>0){
             getFace(photos);
         }
-
+        LocalDateTime now1 = LocalDateTime.now();
+        long l = now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        long l1 = now1.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        System.err.println("执行静态定时任务2执行结束,运行时间: " + (l1-l));
     }
 
 
