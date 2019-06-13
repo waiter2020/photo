@@ -49,6 +49,8 @@ public interface PhotoService {
 
     Map<String, Long> getDistrictList(String username);
 
+    CopyOnWriteArrayList<Photo> getPhotos();
+
     Map<String, Long> getProvinceList(String username);
 
     Map<String,Long> getTypeList(String userName);
@@ -88,4 +90,5 @@ public interface PhotoService {
 
     Page<Photo> getByType(String userName,String type,Pageable pageable);
 
+    void sync();
 }

@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -27,12 +28,13 @@ import java.util.*;
 public class GetFaceGroup {
     private final FaceGroupService faceGroupService;
     private final FaceDao faceDao;
-    private final GetFaces getFaces;
-
-    public GetFaceGroup(FaceGroupService faceGroupService, FaceDao faceDao, PhotoService photoService) {
+    private  GetFaces getFaces;
+    private final ApplicationContext context;
+    public GetFaceGroup(FaceGroupService faceGroupService, FaceDao faceDao, ApplicationContext context) {
         this.faceGroupService = faceGroupService;
         this.faceDao = faceDao;
-        this.getFaces = new GetFaces(photoService,faceDao);
+        this.context = context;
+
     }
 
     public List<FaceGroup> getGetFaceGroup(List<Face> faces) {
@@ -48,8 +50,13 @@ public class GetFaceGroup {
                 i--;
             }
         }
-        List<Face> matrix = getFaces.getMatrix(nullFace);
-        faces.addAll(matrix);
+        if (getFaces==null){
+            getFaces = new GetFaces(context.getBean(PhotoService.class),faceDao);
+        }
+        if (nullFace.size()>0) {
+            List<Face> matrix = getFaces.getMatrix(nullFace);
+            faces.addAll(matrix);
+        }
         String [] res= new String[faces.size()];
         for(int i=0;i<faces.size();i++){
             res[i]=Arrays.toString(faces.get(i).getMatrix());

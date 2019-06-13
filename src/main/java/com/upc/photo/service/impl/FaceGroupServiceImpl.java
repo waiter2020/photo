@@ -11,6 +11,7 @@ import com.upc.photo.service.UserService;
 import com.upc.photo.utils.GetFaceGroup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +32,14 @@ public class FaceGroupServiceImpl implements FaceGroupService {
     private final UserService userService;
     private final FaceDao faceDao;
     private final GetFaceGroup getFaceGroup;
-    private final PhotoService photoService;
 
-    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao, PhotoService photoService) {
+
+    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao, ApplicationContext context) {
         this.faceGroupDao = faceGroupDao;
         this.userService = userService;
         this.faceDao = faceDao;
-        this.getFaceGroup = new GetFaceGroup(this,faceDao,photoService );
-        this.photoService = photoService;
+        this.getFaceGroup = new GetFaceGroup(this,faceDao,context );
+
     }
 
 

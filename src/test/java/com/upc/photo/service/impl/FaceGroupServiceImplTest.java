@@ -68,8 +68,7 @@ public void testAnalyze() throws Exception {
 @Test
 public void testTasks() throws Exception { 
 //TODO: Test goes here...
-    GetFaceGroup getFaceGroup = new GetFaceGroup(faceGroupService, faceDao, );
-    List<FaceGroup> getFaceGroup1 = getFaceGroup.getGetFaceGroup(faceDao.findAllByAuthor("1234567"));
+
 
 } 
 

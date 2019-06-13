@@ -55,7 +55,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final GetFaces getFaces;
     private final FaceDao faceDao;
     private final FaceGroupServiceImpl faceGroupService;
-    private final CopyOnWriteArrayList<Photo> photos ;
+    public final CopyOnWriteArrayList<Photo> photos ;
 
     public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu, FaceDao faceDao, FaceGroupServiceImpl faceGroupService) {
         this.photoDao = photoDao;
@@ -145,6 +145,11 @@ public class PhotoServiceImpl implements PhotoService {
             map.put(next,countByCity(username,next));
         }
         return map;
+    }
+
+    @Override
+    public CopyOnWriteArrayList<Photo> getPhotos() {
+        return photos;
     }
 
     @Override
