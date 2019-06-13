@@ -38,7 +38,7 @@ public class GetFaces {
         String url = "http://101.132.132.225:8000/face_api/faceAlign";
         List<Face> allFace = new LinkedList<>();
         for (int i = 0; i <bytes.length ; i++) {
-            Photo photo = photos.get(i);
+            Photo photo = photos.remove(i);
             String resultString = RequestUtils.get(url, bytes[i], "{ \"instances\" : \"%s\" }");
             FacesResult faces = JSON.parseObject(resultString, FacesResult.class);
             Base64.Decoder decoder = Base64.getDecoder();
@@ -58,6 +58,7 @@ public class GetFaces {
             }
             allFace.addAll(facesList);
             photo.setFaces(facesList);
+            photos.add(i,photo);
         }
         photoService.saveAll(photos);
 
