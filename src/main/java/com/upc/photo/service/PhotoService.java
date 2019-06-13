@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
 /**
@@ -28,7 +29,9 @@ import java.util.concurrent.Future;
 
 public interface PhotoService {
 
-    Photo findOneByCity(String userName,String cityName);
+
+
+    Photo findOneByCity(String userName, String cityName);
 
     Photo findOneByDistrict(String username, String district);
 
@@ -63,7 +66,10 @@ public interface PhotoService {
 
     void saveAll(Iterable<Photo> iterable);
 
-    void sync();
+
+
+
+
 
     ArrayList<Photo> findAll(String userName);
 

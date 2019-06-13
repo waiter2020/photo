@@ -29,11 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -54,21 +54,22 @@ public class PhotoServiceImpl implements PhotoService {
     private final GetFaces getFaces;
     private final FaceDao faceDao;
     private final FaceGroupServiceImpl faceGroupService;
-    public final CopyOnWriteArrayList<Photo> photos = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<Photo> photos ;
 
     public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu, FaceDao faceDao, FaceGroupServiceImpl faceGroupService) {
         this.photoDao = photoDao;
         this.gridFsTemplate = gridFsTemplate;
         this.getPhotoType = getPhotoType;
         this.addressByBaidu = addressByBaidu;
-        this.getFaces = new GetFaces(this);
+        this.getFaces = new GetFaces(this, faceDao);
         this.faceDao = faceDao;
         this.faceGroupService = faceGroupService;
+        this.photos = new CopyOnWriteArrayList<>();
     }
 
-    @Scheduled(fixedRate=1000*60*5)
-    @Override
+   // @Scheduled(fixedRate=1000*60*5)
     public void sync(){
+        System.err.println("执行静态定时任务2时间: " + LocalDateTime.now());
         ArrayList<Photo> photos = new ArrayList<>();
         while (this.photos.size()>1){
             photos.add(this.photos.remove(0));
@@ -180,6 +181,7 @@ public class PhotoServiceImpl implements PhotoService {
         gridFsTemplate.delete(query(whereFilename().is(photo.getFileName())));
         gridFsTemplate.delete(query(whereFilename().is(photo.getThumbnailName())));
         faceDao.deleteAll(photo.getFaces());
+
         photoDao.delete(photo);
     }
 
@@ -244,6 +246,9 @@ public class PhotoServiceImpl implements PhotoService {
         String s = photo.getType().toString();
         if(s.contains("PERSON")){
             photos.add(photo);
+            if (photos.size()>100){
+                sync();
+            }
         }
         //getFace(photo,v);
     }

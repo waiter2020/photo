@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PhotoServiceTest {
 
     @Autowired
-    private PhotoServiceImpl photoService;
+    private PhotoService photoService;
 
 
     @Test
@@ -63,10 +64,13 @@ public class PhotoServiceTest {
 
     @Test
     public void test3(){
-        ArrayList<Photo> all = photoService.findAll("1234567");
-        photoService.photos.add(all.get(0));
-        photoService.photos.add(all.get(1));
-        photoService.sync();
+//        ArrayList<Photo> all = photoService.findAll("1234567");
+//        CopyOnWriteArrayList<Photo> photos = photoService.getPhotos();
+//        photos.add(all.get(0));
+//        photos.add(all.get(1));
+//        photos.add(all.get(2));
+//        photos.add(all.get(3));
+//        photoService.sync();
 
     }
 
