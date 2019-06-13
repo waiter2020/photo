@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -67,7 +68,7 @@ public class PhotoServiceImpl implements PhotoService {
         this.photos = new CopyOnWriteArrayList<>();
     }
 
-   // @Scheduled(fixedRate=1000*60*5)
+    @Scheduled(fixedRate=1000*60*5)
     public void sync(){
         System.err.println("执行静态定时任务2时间: " + LocalDateTime.now());
         ArrayList<Photo> photos = new ArrayList<>();
