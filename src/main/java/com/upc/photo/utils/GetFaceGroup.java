@@ -5,6 +5,7 @@ import com.upc.photo.dao.FaceDao;
 import com.upc.photo.model.Face;
 import com.upc.photo.model.FaceGroup;
 import com.upc.photo.service.FaceGroupService;
+import com.upc.photo.service.PhotoService;
 import lombok.Data;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -12,7 +13,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -27,16 +27,29 @@ import java.util.*;
 public class GetFaceGroup {
     private final FaceGroupService faceGroupService;
     private final FaceDao faceDao;
+    private final GetFaces getFaces;
 
-    public GetFaceGroup(FaceGroupService faceGroupService, FaceDao faceDao) {
+    public GetFaceGroup(FaceGroupService faceGroupService, FaceDao faceDao, PhotoService photoService) {
         this.faceGroupService = faceGroupService;
         this.faceDao = faceDao;
+        this.getFaces = new GetFaces(photoService,faceDao);
     }
 
     public List<FaceGroup> getGetFaceGroup(List<Face> faces) {
         if (faces.size()<2){
             return null;
         }
+
+        List<Face> nullFace = new LinkedList<>();
+        for (int i =0 ; i < faces.size();i++){
+            Face f = faces.get(i);
+            if (f.getMatrix()==null){
+                nullFace.add(faces.remove(i));
+                i--;
+            }
+        }
+        List<Face> matrix = getFaces.getMatrix(nullFace);
+        faces.addAll(matrix);
         String [] res= new String[faces.size()];
         for(int i=0;i<faces.size();i++){
             res[i]=Arrays.toString(faces.get(i).getMatrix());

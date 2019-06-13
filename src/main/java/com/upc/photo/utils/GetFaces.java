@@ -61,7 +61,12 @@ public class GetFaces {
         }
         photoService.saveAll(photos);
 
-        url = "http://101.132.132.225:8501/v1/models/facenet:predict";
+
+        return getMatrix(allFace);
+    }
+
+    public List<Face> getMatrix(List<Face> allFace){
+        String url = "http://101.132.132.225:8501/v1/models/facenet:predict";
         Base64.Encoder encoder = Base64.getEncoder();
         String[] faceByte = new String[allFace.size()];
         for (int i = 0; i < allFace.size(); i++) {
@@ -111,6 +116,7 @@ public class GetFaces {
         }
         return allFace;
     }
+
 }
 @Data
 class FacesResult{

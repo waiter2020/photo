@@ -6,12 +6,11 @@ import com.upc.photo.model.Face;
 import com.upc.photo.model.FaceGroup;
 import com.upc.photo.model.User;
 import com.upc.photo.service.FaceGroupService;
+import com.upc.photo.service.PhotoService;
 import com.upc.photo.service.UserService;
 import com.upc.photo.utils.GetFaceGroup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +31,14 @@ public class FaceGroupServiceImpl implements FaceGroupService {
     private final UserService userService;
     private final FaceDao faceDao;
     private final GetFaceGroup getFaceGroup;
+    private final PhotoService photoService;
 
-    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao) {
+    public FaceGroupServiceImpl(FaceGroupDao faceGroupDao, UserService userService, FaceDao faceDao, PhotoService photoService) {
         this.faceGroupDao = faceGroupDao;
         this.userService = userService;
         this.faceDao = faceDao;
-        this.getFaceGroup = new GetFaceGroup(this,faceDao);
+        this.getFaceGroup = new GetFaceGroup(this,faceDao,photoService );
+        this.photoService = photoService;
     }
 
 
