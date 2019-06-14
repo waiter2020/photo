@@ -60,6 +60,7 @@ public class GetFaces {
             face.setAuthor(photo.getAuthor());
             face.setName(String.format("face-%d.jpg", j));
             face.setBytes(decode);
+            System.out.println("人脸大小:"+decode.length);
             face.setPhotoId(photo.getId());
             face = faceDao.save(face);
             facesList.add(face);
@@ -69,9 +70,9 @@ public class GetFaces {
         photo.setFaces(facesList);
 
         photoService.save(photo);
+        System.out.println("人脸数"+allFace.size());
 
-
-        return getMatrix(allFace);
+        return allFace;
     }
 
     public List<Face> getMatrix(List<Face> allFace) {
@@ -117,7 +118,7 @@ public class GetFaces {
             }
         }
 
-
+        System.out.println(resultString);
         Result result1 = JSON.parseObject(resultString, Result.class);
         double[][] predictions = result1.getPredictions();
         for (int i = 0; i < predictions.length; i++) {

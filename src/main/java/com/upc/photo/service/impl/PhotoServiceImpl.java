@@ -84,6 +84,7 @@ public class PhotoServiceImpl implements PhotoService {
                 faceDao.saveAll(matrix);
             }catch (Exception e){
                 this.faces.addAll(photos);
+                e.printStackTrace();
             }
 
         }
@@ -260,7 +261,7 @@ public class PhotoServiceImpl implements PhotoService {
         //TODO:判断是不是人，执行下一步操作
         String s = photo.getType().toString();
 //        if(s.contains("PERSON")){
-            faces.addAll(getFace(photo,v));
+        faces.addAll(getFace(photo,v));
 //            if (photos.size()>100){
 //                sync();
 //            }
