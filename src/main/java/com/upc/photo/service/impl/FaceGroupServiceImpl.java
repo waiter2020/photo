@@ -66,7 +66,7 @@ public class FaceGroupServiceImpl implements FaceGroupService {
         return faceGroupDao.saveAll((Iterable<FaceGroup>) faceGroups);
     }
 
-    //@Scheduled(fixedRate=1000*60*5)
+    @Scheduled(fixedRate=1000*60*5)
     public void tasks() {
         LocalDateTime now = LocalDateTime.now();
         System.err.println("执行静态定时任务1时间: " + now);
