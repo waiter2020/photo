@@ -41,7 +41,14 @@ public class GetFaces {
             Photo photo = photos.remove(i);
             System.out.println(photo.getName()+bytes[i].length);
             String resultString = RequestUtils.get(url, bytes[i], "{ \"instances\" : \"%s\" }");
-            FacesResult faces = JSON.parseObject(resultString, FacesResult.class);
+            FacesResult faces= null;
+            try {
+                faces = JSON.parseObject(resultString, FacesResult.class);
+            }catch (Exception e){
+                System.out.println(photo.getName());
+                e.printStackTrace();
+            }
+
             Base64.Decoder decoder = Base64.getDecoder();
             ArrayList<Face> facesList = new ArrayList<>();
 

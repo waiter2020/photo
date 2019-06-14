@@ -79,7 +79,12 @@ public class PhotoServiceImpl implements PhotoService {
             photos.add(this.photos.remove(0));
         }
         if (photos.size()>0){
-            getFace(photos);
+            try {
+                getFace(photos);
+            }catch (Exception e){
+                this.photos.addAll(photos);
+            }
+
         }
         LocalDateTime now1 = LocalDateTime.now();
         long l = now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
