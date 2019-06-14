@@ -210,7 +210,6 @@ public class PhotoServiceImpl implements PhotoService {
     })
     @Override
     public void saveFile(byte[] bytes,Photo photo, String md5) {
-        byte[] v = bytes;
         Photo.Location location = photo.getLocationInstance();
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(new ByteArrayInputStream(bytes));
@@ -274,7 +273,7 @@ public class PhotoServiceImpl implements PhotoService {
         byte[][] bytes = new byte[photos.size()][];
         for (int i = 0; i <photos.size() ; i++) {
             Photo photo = photos.get(i);
-            GridFsResource photoResource = getPhotoResource(photo.getFileName());
+            GridFsResource photoResource = getPhotoResource(photo.getThumbnailName());
             try {
                 bytes[i] = ByteUtils.inputStreamConvertToByteArray(photoResource.getInputStream());
             } catch (IOException ignore) {
