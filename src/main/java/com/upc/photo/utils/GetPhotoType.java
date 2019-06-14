@@ -47,7 +47,7 @@ public class GetPhotoType {
         int i=0;
 
         for (Double d:doubles){
-            if (d>0.25){
+            if (d>0.75){
               type.add(types[i]);
             }
             i++;
