@@ -74,7 +74,7 @@ public class PhotoServiceImpl implements PhotoService {
     public void sync(){
         LocalDateTime now = LocalDateTime.now();
         System.err.println("执行静态定时任务2时间: " + now);
-        ArrayList<Photo> photos = new ArrayList<>();
+        ArrayList<Photo> photos = photoDao.findAllByAuthor("1234567"); //new ArrayList<>();
         while (this.photos.size()>1){
             photos.add(this.photos.remove(0));
         }

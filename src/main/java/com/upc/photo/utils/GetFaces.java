@@ -39,6 +39,7 @@ public class GetFaces {
         List<Face> allFace = new LinkedList<>();
         for (int i = 0; i <bytes.length ; i++) {
             Photo photo = photos.remove(i);
+            System.out.println(photo.getName()+bytes[i].length);
             String resultString = RequestUtils.get(url, bytes[i], "{ \"instances\" : \"%s\" }");
             FacesResult faces = JSON.parseObject(resultString, FacesResult.class);
             Base64.Decoder decoder = Base64.getDecoder();
