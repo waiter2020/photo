@@ -273,7 +273,7 @@ public class PhotoServiceImpl implements PhotoService {
         byte[][] bytes = new byte[photos.size()][];
         for (int i = 0; i <photos.size() ; i++) {
             Photo photo = photos.get(i);
-            GridFsResource photoResource = getPhotoResource(photo.getThumbnailName());
+            GridFsResource photoResource = getPhotoResource(photo.getFileName());
             try {
                 bytes[i] = ByteUtils.inputStreamConvertToByteArray(photoResource.getInputStream());
             } catch (IOException ignore) {
