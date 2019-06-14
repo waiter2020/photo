@@ -258,9 +258,9 @@ public class PhotoServiceImpl implements PhotoService {
         String s = photo.getType().toString();
         if(s.contains("PERSON")){
             photos.add(photo);
-            if (photos.size()>100){
-                sync();
-            }
+//            if (photos.size()>100){
+//                sync();
+//            }
         }
         //getFace(photo,v);
     }
