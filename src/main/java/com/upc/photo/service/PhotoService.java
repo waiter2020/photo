@@ -49,7 +49,7 @@ public interface PhotoService {
 
     Map<String, Long> getDistrictList(String username);
 
-    CopyOnWriteArrayList<Photo> getPhotos();
+
 
     Map<String, Long> getProvinceList(String username);
 

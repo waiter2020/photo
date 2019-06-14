@@ -56,7 +56,7 @@ public class PhotoServiceImpl implements PhotoService {
     private final GetFaces getFaces;
     private final FaceDao faceDao;
     private final FaceGroupServiceImpl faceGroupService;
-    public final CopyOnWriteArrayList<Photo> photos ;
+    private final CopyOnWriteArrayList<Face> faces ;
 
     public PhotoServiceImpl(PhotoDao photoDao, GridFsTemplate gridFsTemplate, GetPhotoType getPhotoType, GetAddressByBaidu addressByBaidu, FaceDao faceDao, FaceGroupServiceImpl faceGroupService) {
         this.photoDao = photoDao;
@@ -66,7 +66,7 @@ public class PhotoServiceImpl implements PhotoService {
         this.getFaces = new GetFaces(this, faceDao);
         this.faceDao = faceDao;
         this.faceGroupService = faceGroupService;
-        this.photos = new CopyOnWriteArrayList<>();
+        this.faces = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -74,15 +74,16 @@ public class PhotoServiceImpl implements PhotoService {
     public void sync(){
         LocalDateTime now = LocalDateTime.now();
         System.err.println("执行静态定时任务2时间: " + now);
-        ArrayList<Photo> photos = new ArrayList<>();
-        while (this.photos.size()>1){
-            photos.add(this.photos.remove(0));
+        ArrayList<Face> photos = new ArrayList<>();
+        while (this.faces.size()>1){
+            photos.add(this.faces.remove(0));
         }
         if (photos.size()>0){
             try {
-                getFace(photos);
+                List<Face> matrix = getFaces.getMatrix(faces);
+                faceDao.saveAll(matrix);
             }catch (Exception e){
-                this.photos.addAll(photos);
+                this.faces.addAll(photos);
             }
 
         }
@@ -158,10 +159,7 @@ public class PhotoServiceImpl implements PhotoService {
         return map;
     }
 
-    @Override
-    public CopyOnWriteArrayList<Photo> getPhotos() {
-        return photos;
-    }
+
 
     @Override
     public Map<String, Long> getProvinceList(String username) {
@@ -210,6 +208,7 @@ public class PhotoServiceImpl implements PhotoService {
     })
     @Override
     public void saveFile(byte[] bytes,Photo photo, String md5) {
+        byte[] v =bytes;
         Photo.Location location = photo.getLocationInstance();
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(new ByteArrayInputStream(bytes));
@@ -260,31 +259,22 @@ public class PhotoServiceImpl implements PhotoService {
         photo = save(photo);
         //TODO:判断是不是人，执行下一步操作
         String s = photo.getType().toString();
-        if(s.contains("PERSON")){
-            photos.add(photo);
+//        if(s.contains("PERSON")){
+            faces.addAll(getFace(photo,v));
 //            if (photos.size()>100){
 //                sync();
 //            }
-        }
+//        }
         //getFace(photo,v);
     }
 
-    private void getFace(List<Photo> photos){
-        byte[][] bytes = new byte[photos.size()][];
-        for (int i = 0; i <photos.size() ; i++) {
-            Photo photo = photos.get(i);
-            GridFsResource photoResource = getPhotoResource(photo.getFileName());
-            try {
-                bytes[i] = ByteUtils.inputStreamConvertToByteArray(photoResource.getInputStream());
-            } catch (IOException ignore) {
+    private List<Face> getFace(Photo photos,byte[] bytes){
 
-            }
-        }
         List<Face> face = getFaces.getFace(photos, bytes);
 //        if (face.isEmpty()){
 //            return;
 //        }
-        List<Face> faces = faceDao.saveAll(face);
+        return faceDao.saveAll(face);
 //
 //        photo.setFaces(faces);
 //        photoDao.save(photo);

@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -34,54 +35,53 @@ public class GetFaces {
         this.faceDao = faceDao;
     }
 
-    public  List<Face> getFace(List<Photo> photos, byte[][] bytes)  {
+    public List<Face> getFace(Photo photo, byte[] bytes) {
         String url = "http://101.132.132.225:8000/face_api/faceAlign";
         List<Face> allFace = new LinkedList<>();
-        for (int i = 0; i <bytes.length ; i++) {
-            Photo photo = photos.remove(i);
-            System.out.println(photo.getName()+bytes[i].length);
-            String resultString = RequestUtils.get(url, bytes[i], "{ \"instances\" : \"%s\" }");
-            FacesResult faces= null;
-            try {
-                faces = JSON.parseObject(resultString, FacesResult.class);
-            }catch (Exception e){
-                System.out.println(photo.getName());
-                e.printStackTrace();
-            }
 
-            Base64.Decoder decoder = Base64.getDecoder();
-            ArrayList<Face> facesList = new ArrayList<>();
+        System.out.println(photo.getName() + bytes.length);
+        String resultString = RequestUtils.get(url, bytes, "{ \"instances\" : \"%s\" }");
+        FacesResult faces = null;
 
-            int j = 0;
-            for (String s : faces.getFaces()) {
-                byte[] decode = decoder.decode(s);
-                Face face = new Face();
-                face.setAuthor(photo.getAuthor());
-                face.setName(String.format("face-%d.jpg", j));
-                face.setBytes(decode);
-                face.setPhotoId(photo.getId());
-                face = faceDao.save(face);
-                facesList.add(face);
-                j++;
-            }
-            allFace.addAll(facesList);
-            photo.setFaces(facesList);
-            photos.add(i,photo);
+        try {
+            faces = JSON.parseObject(resultString, FacesResult.class);
+        } catch (Exception e) {
+            System.out.println(photo.getName());
+            e.printStackTrace();
         }
-        photoService.saveAll(photos);
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        ArrayList<Face> facesList = new ArrayList<>();
+
+        int j = 0;
+        for (String s : faces.getFaces()) {
+            byte[] decode = decoder.decode(s);
+            Face face = new Face();
+            face.setAuthor(photo.getAuthor());
+            face.setName(String.format("face-%d.jpg", j));
+            face.setBytes(decode);
+            face.setPhotoId(photo.getId());
+            face = faceDao.save(face);
+            facesList.add(face);
+            j++;
+        }
+        allFace.addAll(facesList);
+        photo.setFaces(facesList);
+
+        photoService.save(photo);
 
 
         return getMatrix(allFace);
     }
 
-    public List<Face> getMatrix(List<Face> allFace){
+    public List<Face> getMatrix(List<Face> allFace) {
         String url = "http://101.132.132.225:8501/v1/models/facenet:predict";
         Base64.Encoder encoder = Base64.getEncoder();
         String[] faceByte = new String[allFace.size()];
         for (int i = 0; i < allFace.size(); i++) {
-            faceByte[i] = String.format("{\"images\": { \"b64\": \"%s\" } }",new String(encoder.encode((allFace.get(i).getBytes()))));
+            faceByte[i] = String.format("{\"images\": { \"b64\": \"%s\" } }", new String(encoder.encode((allFace.get(i).getBytes()))));
         }
-        String res =Arrays.toString(faceByte);
+        String res = Arrays.toString(faceByte);
 
         String format = "{\"signature_name\": \"calculate_embeddings\", \"instances\" :  %s }";
         String finalUrl = url;
@@ -120,15 +120,16 @@ public class GetFaces {
 
         Result result1 = JSON.parseObject(resultString, Result.class);
         double[][] predictions = result1.getPredictions();
-        for (int i = 0; i <predictions.length ; i++) {
+        for (int i = 0; i < predictions.length; i++) {
             allFace.get(i).setMatrix(predictions[i]);
         }
         return allFace;
     }
 
 }
+
 @Data
-class FacesResult{
-    private String [] faces;
+class FacesResult {
+    private String[] faces;
 
 }
