@@ -118,7 +118,7 @@ public class GetFaces {
             }
         }
 
-        System.out.println(resultString);
+        //System.out.println(resultString);
         Result result1 = JSON.parseObject(resultString, Result.class);
         double[][] predictions = result1.getPredictions();
         for (int i = 0; i < predictions.length; i++) {

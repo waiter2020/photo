@@ -196,7 +196,10 @@ public class PhotoServiceImpl implements PhotoService {
     public void delete(Photo photo) {
         gridFsTemplate.delete(query(whereFilename().is(photo.getFileName())));
         gridFsTemplate.delete(query(whereFilename().is(photo.getThumbnailName())));
-        faceDao.deleteAll(photo.getFaces());
+        List<Face> faces = photo.getFaces();
+        if (!faces.isEmpty()) {
+            faceDao.deleteAll();
+        }
 
         photoDao.delete(photo);
     }
