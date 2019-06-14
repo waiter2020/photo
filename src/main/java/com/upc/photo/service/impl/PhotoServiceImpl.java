@@ -70,7 +70,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    @Scheduled(fixedRate=1000*60*5)
+    //@Scheduled(fixedRate=1000*60*5)
     public void sync(){
         LocalDateTime now = LocalDateTime.now();
         System.err.println("执行静态定时任务2时间: " + now);
