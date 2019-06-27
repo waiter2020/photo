@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public interface PhotoDao extends MongoRepository<Photo, BigInteger> {
 
     ArrayList<Photo> findAllByAuthorAndAddressNotNull(String userName);
+    ArrayList<Photo> findAllByAuthorAndAddress_CityNot(String userName,String city);
 
     Long countAllByAuthorAndAddress_City(String userName,String cityName);
 

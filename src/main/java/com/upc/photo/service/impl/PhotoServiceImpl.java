@@ -131,7 +131,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Set<String> getCityList(String userName) {
-        ArrayList<Photo> all = photoDao.findAllByAuthor(userName);
+        ArrayList<Photo> all = photoDao.findAllByAuthorAndAddress_CityNot(userName,"");
         HashSet<String> citys = new HashSet<>();
         long l = System.currentTimeMillis();
         for(Photo p:all){
