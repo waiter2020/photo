@@ -8,11 +8,8 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.upc.photo.dao.FaceDao;
 import com.upc.photo.dao.PhotoDao;
-import com.upc.photo.model.Album;
-import com.upc.photo.model.Face;
-import com.upc.photo.model.Photo;
+import com.upc.photo.model.*;
 
-import com.upc.photo.model.RestPage;
 import com.upc.photo.service.PhotoService;
 import com.upc.photo.utils.ByteUtils;
 import com.upc.photo.utils.GetAddressByBaidu;
@@ -134,11 +131,16 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Set<String> getCityList(String userName) {
-        ArrayList<Photo> all = photoDao.findAllByAuthorAndAddressNotNull(userName);
+        ArrayList<Photo> all = photoDao.findAllByAuthor(userName);
         HashSet<String> citys = new HashSet<>();
         long l = System.currentTimeMillis();
         for(Photo p:all){
-            citys.add(p.getAddress().getCity());
+            Address address = p.getAddress();
+            if (address==null){
+                continue;
+            }
+            String city = address.getCity();
+            citys.add(city);
         }
         long l1 = System.currentTimeMillis();
         System.out.println(l1-l);
