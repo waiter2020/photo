@@ -45,7 +45,7 @@ public interface PhotoService {
 
     Page<Photo> getByProvince(String username, String province, PageRequest of);
 
-    Map<String,Long> getCityList(String userName);
+    Set<String> getCityList(String userName);
 
     Map<String, Long> getDistrictList(String username);
 

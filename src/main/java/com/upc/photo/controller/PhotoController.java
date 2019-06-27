@@ -40,6 +40,7 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -293,7 +294,7 @@ public class PhotoController {
      */
     @ApiOperation("获取用户照片城市")
     @GetMapping("/get_city_list")
-    public Map<String,Long> getCityList(Authentication authentication){
+    public Set<String> getCityList(Authentication authentication){
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         return photoService.getCityList(username);
     }
