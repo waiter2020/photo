@@ -136,9 +136,12 @@ public class PhotoServiceImpl implements PhotoService {
     public Set<String> getCityList(String userName) {
         ArrayList<Photo> all = photoDao.findAllByAuthorAndAddressNotNull(userName);
         HashSet<String> citys = new HashSet<>();
+        long l = System.currentTimeMillis();
         for(Photo p:all){
             citys.add(p.getAddress().getCity());
         }
+        long l1 = System.currentTimeMillis();
+        System.out.println(l1-l);
 //        all.forEach(e-> citys.add(e.getAddress().getCity()));
 //        Iterator<String> iterator = citys.iterator();
 //        HashMap<String,Long> map = new HashMap<>();
