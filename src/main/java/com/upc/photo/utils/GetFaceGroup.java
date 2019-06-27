@@ -131,7 +131,7 @@ public class GetFaceGroup {
                             FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
                             faceGroup.setName(byId.getName());
                         }catch (Exception ignored){
-
+                            face.setGroupId(null);
                         }
 
 
