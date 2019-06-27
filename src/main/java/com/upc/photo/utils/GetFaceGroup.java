@@ -126,9 +126,14 @@ public class GetFaceGroup {
                     f=true;
                     Map<String,String> faces1 = faceGroup.getFaces();
                     if (face.getGroupId()!=null) {
+                        try {
 
                             FaceGroup byId = faceGroupService.findById(new BigInteger(face.getGroupId()));
                             faceGroup.setName(byId.getName());
+                        }catch (Exception ignored){
+
+                        }
+
 
 
                     }
